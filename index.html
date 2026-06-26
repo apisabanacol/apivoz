@@ -193,11 +193,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="contenido">
       <div>
         <div class="sec-label">¿En qué apiario estás hoy?</div>
-        <div class="apiario-lista-sel" id="apiario-lista-sel">
-          <div class="vacio" id="sin-apiarios-setup">
-            Sin apiarios aún. <span style="color:var(--verde);cursor:pointer;font-weight:600" onclick="irA('p-config')">Configura primero →</span>
-          </div>
-        </div>
+        <div class="apiario-lista-sel" id="apiario-lista-sel"></div>
       </div>
       <div>
         <div class="sec-label">Tipo de revisión</div>
@@ -365,15 +361,22 @@ function renderApiarios() {
 }
 function renderApiariosSel() {
   var cont = document.getElementById('apiario-lista-sel');
-  var sin = document.getElementById('sin-apiarios-setup');
-  if (!S.apiarios.length) { cont.innerHTML = ''; cont.appendChild(sin); sin.style.display='block'; return; }
-  sin.style.display = 'none';
   cont.innerHTML = '';
+  if (!S.apiarios.length) {
+    cont.innerHTML = '<div class="vacio">Sin apiarios. <span style="color:var(--verde);cursor:pointer;font-weight:600" onclick="irA(\'p-config\')">Configura primero →</span></div>';
+    document.getElementById('btn-empezar').disabled = true;
+    return;
+  }
   S.apiarios.forEach(function(a) {
     var b = document.createElement('button');
     b.className = 'apiario-sel-btn' + (S.apiario === a ? ' sel' : '');
     b.innerHTML = '<span class="apiario-icono">📍</span>' + a;
-    b.onclick = function() { S.apiario = a; renderApiariosSel(); actualizarBtnEmpezar(); };
+    b.onclick = function() {
+      S.apiario = a;
+      cont.querySelectorAll('.apiario-sel-btn').forEach(function(x){ x.classList.remove('sel'); });
+      b.classList.add('sel');
+      actualizarBtnEmpezar();
+    };
     cont.appendChild(b);
   });
 }
