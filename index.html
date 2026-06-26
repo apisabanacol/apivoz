@@ -11,360 +11,175 @@
 <title>ApiVoz</title>
 <link rel="manifest" href="manifest.json">
 <style>
-  :root {
-    --verde: #1a6b3a;
-    --verde-claro: #2d9155;
-    --verde-pálido: #e8f5ee;
-    --miel: #e8960a;
-    --miel-claro: #fff3cc;
-    --miel-pálido: #fffbf0;
-    --rojo: #c0392b;
-    --gris: #f5f5f5;
-    --gris-borde: #ddd;
-    --texto: #1a1a1a;
-    --texto-suave: #555;
-    --blanco: #ffffff;
-    --sombra: 0 2px 12px rgba(0,0,0,0.1);
-  }
+:root {
+  --verde:#1a6b3a; --verde-claro:#2d9155; --verde-palido:#e8f5ee;
+  --miel:#e8960a; --miel-claro:#fff3cc;
+  --gris:#f5f5f5; --gris-borde:#ddd;
+  --texto:#1a1a1a; --texto-suave:#666; --blanco:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--verde);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.pantalla{display:none;width:100%;max-width:420px;min-height:100vh;flex-direction:column}
+.pantalla.activa{display:flex}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* BIENVENIDA */
+#p-bienvenida{background:var(--verde);align-items:center;justify-content:center;gap:20px;padding:40px 24px}
+.logo-circulo{width:90px;height:90px;border-radius:50%;background:var(--miel);display:flex;align-items:center;justify-content:center;font-size:48px}
+.logo-titulo{font-size:34px;font-weight:700;color:#fff;letter-spacing:-1px}
+.logo-sub{font-size:14px;color:rgba(255,255,255,.75);text-align:center}
+.btn-verde{width:100%;padding:17px;border-radius:14px;background:var(--miel);border:none;font-size:17px;font-weight:600;color:#3a1f00;cursor:pointer;transition:opacity .15s}
+.btn-verde:active{opacity:.85}
+.btn-outline{width:100%;padding:13px;border-radius:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);font-size:15px;font-weight:500;color:#fff;cursor:pointer}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--verde);
-    color: var(--texto);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-  }
+/* INTERIOR */
+.pantalla-interna{background:#fff;border-radius:24px 24px 0 0;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.cabecera{background:var(--verde);padding:16px 20px 18px;color:#fff}
+.cab-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.cab-titulo{font-size:19px;font-weight:700}
+.cab-sub{font-size:12px;color:rgba(255,255,255,.75)}
+.btn-volver{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.contenido{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
 
-  .pantalla { display: none; width: 100%; max-width: 420px; min-height: 100vh; flex-direction: column; }
-  .pantalla.activa { display: flex; }
+/* CONFIGURACIÓN */
+.sec-label{font-size:11px;font-weight:600;color:var(--texto-suave);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.input-txt{width:100%;padding:13px 15px;border-radius:11px;border:2px solid var(--gris-borde);background:var(--gris);font-size:15px;color:var(--texto);outline:none;transition:border-color .15s}
+.input-txt:focus{border-color:var(--verde);background:#fff}
+.lista-apiarios{display:flex;flex-direction:column;gap:6px}
+.item-apiario{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:11px;background:var(--gris);border:1.5px solid var(--gris-borde)}
+.item-apiario span{font-size:15px;font-weight:500}
+.btn-borrar{background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:2px 6px}
+.btn-agregar{width:100%;padding:12px;border-radius:11px;background:var(--verde-palido);border:2px dashed var(--verde);font-size:14px;font-weight:600;color:var(--verde);cursor:pointer}
+.btn-primario{width:100%;padding:15px;border-radius:13px;background:var(--verde-claro);border:none;font-size:16px;font-weight:600;color:#fff;cursor:pointer;margin-top:4px}
+.btn-primario:disabled{opacity:.4}
 
-  /* ── BIENVENIDA ── */
-  #p-bienvenida {
-    background: var(--verde);
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    padding: 40px 24px;
-  }
-  .logo-circulo {
-    width: 100px; height: 100px; border-radius: 50%;
-    background: var(--miel);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 52px;
-  }
-  .logo-titulo { font-size: 36px; font-weight: 700; color: var(--blanco); letter-spacing: -1px; }
-  .logo-sub { font-size: 15px; color: rgba(255,255,255,0.75); text-align: center; }
-  .btn-inicio {
-    width: 100%; padding: 18px; border-radius: 16px;
-    background: var(--miel); border: none;
-    font-size: 18px; font-weight: 600; color: #3a1f00;
-    cursor: pointer; margin-top: 16px;
-    transition: transform .1s, opacity .1s;
-  }
-  .btn-inicio:active { transform: scale(0.97); opacity: .9; }
-  .btn-historial {
-    width: 100%; padding: 14px; border-radius: 16px;
-    background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
-    font-size: 15px; font-weight: 500; color: var(--blanco);
-    cursor: pointer;
-  }
+/* SETUP SESIÓN */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sel-btn{padding:14px 10px;border-radius:12px;border:2px solid var(--gris-borde);background:var(--gris);font-size:13px;font-weight:500;color:var(--texto);cursor:pointer;text-align:center;transition:all .15s}
+.sel-btn.act-verde{border-color:var(--verde);background:var(--verde-palido);color:var(--verde)}
+.sel-btn.act-miel{border-color:var(--miel);background:var(--miel-claro);color:#3a1f00}
+.apiario-lista-sel{display:flex;flex-direction:column;gap:8px}
+.apiario-sel-btn{padding:14px 16px;border-radius:12px;border:2px solid var(--gris-borde);background:var(--gris);font-size:16px;font-weight:500;color:var(--texto);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:10px}
+.apiario-sel-btn.sel{border-color:var(--verde);background:var(--verde-palido);color:var(--verde)}
+.apiario-icono{font-size:20px}
 
-  /* ── PANTALLAS INTERNAS ── */
-  .pantalla-interna {
-    background: var(--blanco);
-    border-radius: 24px 24px 0 0;
-    flex: 1;
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
+/* REVISIÓN */
+#p-revision{background:var(--verde)}
+.rev-cab{background:var(--verde);padding:14px 20px 14px;color:#fff}
+.rev-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.rev-info-col div:first-child{font-size:12px;color:rgba(255,255,255,.7)}
+.rev-info-col div:last-child{font-size:15px;font-weight:700}
+.rev-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;align-self:flex-start}
+.badge-e{background:var(--miel);color:#3a1f00}
+.badge-c{background:#a8d5b8;color:#0a3d1f}
+.barra{height:4px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
+.barra-fill{height:100%;background:#fff;border-radius:2px;transition:width .3s}
 
-  .cabecera {
-    background: var(--verde);
-    padding: 16px 20px 20px;
-    color: var(--blanco);
-  }
-  .cab-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .cab-titulo { font-size: 20px; font-weight: 700; }
-  .cab-sub { font-size: 13px; color: rgba(255,255,255,0.75); }
-  .btn-volver {
-    background: rgba(255,255,255,0.2); border: none; border-radius: 50%;
-    width: 36px; height: 36px; color: var(--blanco);
-    font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
+.rev-cuerpo{background:#fff;border-radius:24px 24px 0 0;flex:1;display:flex;flex-direction:column;padding:18px;gap:12px;overflow-y:auto}
 
-  .contenido { flex: 1; overflow-y: auto; padding: 20px; }
+/* MIC ESTADO */
+.mic-estado{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--gris);border:2px solid var(--gris-borde);transition:all .3s}
+.mic-estado.escuchando{background:#fff8e1;border-color:var(--miel)}
+.mic-estado.pausado{background:#ffeaea;border-color:#e74c3c}
+.mic-dot{width:10px;height:10px;border-radius:50%;background:var(--gris-borde);flex-shrink:0;transition:background .3s}
+.mic-estado.escuchando .mic-dot{background:var(--miel);animation:parpadeo 1s ease-in-out infinite}
+.mic-estado.pausado .mic-dot{background:#e74c3c}
+.mic-texto{font-size:13px;font-weight:500;color:var(--texto-suave)}
+.mic-estado.escuchando .mic-texto{color:#7a4500}
+@keyframes parpadeo{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* ── SETUP ── */
-  .setup-grupo { margin-bottom: 20px; }
-  .setup-label {
-    font-size: 12px; font-weight: 600; color: var(--texto-suave);
-    text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px;
-  }
-  .opciones-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .opcion-btn {
-    padding: 14px 10px; border-radius: 12px;
-    border: 2px solid var(--gris-borde); background: var(--gris);
-    font-size: 14px; font-weight: 500; color: var(--texto);
-    cursor: pointer; text-align: center; transition: all .15s;
-  }
-  .opcion-btn.seleccionado { border-color: var(--verde); background: var(--verde-pálido); color: var(--verde); }
-  .opcion-btn.modo-completo.seleccionado { border-color: var(--miel); background: var(--miel-claro); color: #3a1f00; }
-  .input-texto {
-    width: 100%; padding: 14px 16px; border-radius: 12px;
-    border: 2px solid var(--gris-borde); background: var(--gris);
-    font-size: 16px; color: var(--texto); outline: none;
-    transition: border-color .15s;
-  }
-  .input-texto:focus { border-color: var(--verde); background: var(--blanco); }
+.preg-box{background:var(--verde-palido);border-radius:14px;padding:15px;border-left:4px solid var(--verde)}
+.preg-num{font-size:11px;font-weight:600;color:var(--verde);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.preg-texto{font-size:17px;font-weight:600;color:var(--texto);line-height:1.3}
+.preg-hint{font-size:11px;color:var(--texto-suave);margin-top:5px;font-style:italic}
 
-  .btn-primario {
-    width: 100%; padding: 16px; border-radius: 14px;
-    background: var(--verde-claro); border: none;
-    font-size: 16px; font-weight: 600; color: var(--blanco);
-    cursor: pointer; margin-top: 8px;
-    transition: transform .1s, opacity .1s;
-  }
-  .btn-primario:active { transform: scale(0.97); opacity: .9; }
-  .btn-primario:disabled { opacity: .4; cursor: default; }
+.resp-area{background:var(--gris);border-radius:12px;padding:13px 15px;min-height:48px;display:flex;align-items:center;border:2px solid transparent;transition:all .2s}
+.resp-area.ok{background:var(--verde-palido);border-color:var(--verde)}
+.resp-texto{font-size:15px;color:var(--texto);flex:1}
+.resp-ph{font-size:14px;color:#bbb;flex:1}
 
-  /* ── REVISION ── */
-  #p-revision { background: var(--verde); }
-  .rev-cabecera {
-    background: var(--verde);
-    padding: 16px 20px 16px;
-    color: var(--blanco);
-  }
-  .rev-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .rev-apiario { font-size: 13px; color: rgba(255,255,255,0.75); }
-  .rev-modo-badge {
-    font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600;
-  }
-  .badge-expres { background: var(--miel); color: #3a1f00; }
-  .badge-completo { background: #a8d5b8; color: #0a3d1f; }
+.opciones-grid{display:grid;gap:7px}
+.opc-btn{padding:11px 8px;border-radius:11px;border:2px solid var(--gris-borde);background:var(--gris);font-size:13px;font-weight:500;color:var(--texto);cursor:pointer;text-align:center;transition:all .15s;line-height:1.3}
+.opc-btn.sel{border-color:var(--verde);background:var(--verde-palido);color:var(--verde);font-weight:600}
+.opc-btn:active{transform:scale(.96)}
 
-  .rev-cuerpo {
-    background: var(--blanco);
-    border-radius: 24px 24px 0 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 12px;
-    overflow-y: auto;
-  }
+.contador-row{display:flex;align-items:center;gap:14px;justify-content:center;padding:6px 0}
+.cnt-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--gris-borde);background:var(--gris);font-size:22px;font-weight:600;color:var(--texto);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cnt-btn:active{transform:scale(.9)}
+.cnt-val{font-size:30px;font-weight:700;min-width:44px;text-align:center}
+.cnt-label{font-size:13px;color:var(--texto-suave)}
 
-  .progreso-barra {
-    height: 4px; background: var(--gris); border-radius: 2px; overflow: hidden;
-  }
-  .progreso-fill {
-    height: 100%; background: var(--verde-claro); border-radius: 2px;
-    transition: width .3s ease;
-  }
+.nav-row{display:flex;gap:8px;margin-top:auto}
+.btn-ant{flex:1;padding:12px;border-radius:11px;border:2px solid var(--gris-borde);background:var(--gris);font-size:14px;font-weight:500;color:var(--texto-suave);cursor:pointer}
+.btn-sig{flex:2;padding:12px;border-radius:11px;background:var(--verde-claro);border:none;font-size:15px;font-weight:600;color:#fff;cursor:pointer}
+.btn-sig:disabled{opacity:.4}
 
-  .pregunta-box {
-    background: var(--verde-pálido);
-    border-radius: 16px;
-    padding: 16px;
-    border-left: 4px solid var(--verde);
-  }
-  .pregunta-num { font-size: 11px; font-weight: 600; color: var(--verde); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
-  .pregunta-texto { font-size: 18px; font-weight: 600; color: var(--texto); line-height: 1.3; }
-  .pregunta-hint { font-size: 12px; color: var(--texto-suave); margin-top: 6px; font-style: italic; }
+/* PAUSA overlay */
+#overlay-pausa{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:center;justify-content:center;padding:24px}
+#overlay-pausa.activo{display:flex}
+.pausa-caja{background:#fff;border-radius:22px;padding:30px 22px;width:100%;max-width:340px;text-align:center}
+.pausa-icono{font-size:44px;margin-bottom:10px}
+.pausa-titulo{font-size:21px;font-weight:700;margin-bottom:6px}
+.pausa-sub{font-size:13px;color:var(--texto-suave);margin-bottom:16px;line-height:1.5}
+.pausa-ctx{background:var(--verde-palido);border-radius:10px;padding:10px;font-size:12px;color:var(--verde);font-weight:500;margin-bottom:18px;white-space:pre-line}
+.btn-continuar{width:100%;padding:15px;border-radius:13px;background:var(--verde-claro);border:none;font-size:16px;font-weight:600;color:#fff;cursor:pointer}
 
-  .respuesta-area {
-    background: var(--gris);
-    border-radius: 14px;
-    padding: 14px 16px;
-    min-height: 56px;
-    display: flex; align-items: center;
-    border: 2px solid transparent;
-    transition: all .2s;
-  }
-  .respuesta-area.escuchando {
-    background: #fff8e1;
-    border-color: var(--miel);
-  }
-  .respuesta-area.tiene-texto {
-    background: var(--verde-pálido);
-    border-color: var(--verde);
-  }
-  .respuesta-texto { font-size: 16px; color: var(--texto); flex: 1; }
-  .respuesta-placeholder { font-size: 15px; color: #aaa; flex: 1; }
+/* RESUMEN */
+.res-fila{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--gris);gap:12px}
+.res-fila:last-child{border:none}
+.res-campo{font-size:13px;color:var(--texto-suave);flex-shrink:0}
+.res-val{font-size:13px;font-weight:600;color:var(--texto);text-align:right}
+.btn-guardar{width:100%;padding:15px;border-radius:13px;background:var(--verde-claro);border:none;font-size:16px;font-weight:700;color:#fff;cursor:pointer;margin-top:4px}
+.btn-corregir{width:100%;padding:12px;border-radius:11px;border:2px solid var(--gris-borde);background:var(--gris);font-size:14px;font-weight:500;color:var(--texto-suave);cursor:pointer;margin-top:8px}
 
-  .mic-grande {
-    width: 72px; height: 72px; border-radius: 50%;
-    background: var(--verde-claro); border: none;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; margin: 0 auto;
-    transition: transform .15s, background .2s;
-    box-shadow: 0 4px 16px rgba(45, 145, 85, 0.35);
-  }
-  .mic-grande.activo {
-    background: var(--miel);
-    box-shadow: 0 4px 20px rgba(232, 150, 10, 0.5);
-    animation: pulsar 1.2s ease-in-out infinite;
-  }
-  .mic-grande svg { width: 32px; height: 32px; fill: var(--blanco); }
-  @keyframes pulsar {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-  }
-
-  .hint-mic { font-size: 13px; color: var(--texto-suave); text-align: center; }
-
-  .botones-opciones { display: grid; gap: 8px; }
-  .botones-opciones.dos { grid-template-columns: 1fr 1fr; }
-  .botones-opciones.tres { grid-template-columns: 1fr 1fr 1fr; }
-  .botones-opciones.cuatro { grid-template-columns: 1fr 1fr; }
-  .btn-opcion {
-    padding: 12px 8px; border-radius: 12px;
-    border: 2px solid var(--gris-borde); background: var(--gris);
-    font-size: 13px; font-weight: 500; color: var(--texto);
-    cursor: pointer; text-align: center; line-height: 1.3;
-    transition: all .15s;
-  }
-  .btn-opcion:active { transform: scale(0.96); }
-  .btn-opcion.sel { border-color: var(--verde); background: var(--verde-pálido); color: var(--verde); font-weight: 600; }
-  .btn-opcion.sel-miel { border-color: var(--miel); background: var(--miel-claro); color: #3a1f00; font-weight: 600; }
-
-  .contador-row { display: flex; align-items: center; gap: 12px; }
-  .btn-contador {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 2px solid var(--gris-borde); background: var(--gris);
-    font-size: 20px; font-weight: 600; color: var(--texto);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all .1s;
-  }
-  .btn-contador:active { transform: scale(0.9); }
-  .contador-val { font-size: 28px; font-weight: 700; color: var(--texto); min-width: 40px; text-align: center; }
-  .contador-label { font-size: 13px; color: var(--texto-suave); }
-
-  .nav-row { display: flex; gap: 8px; }
-  .btn-ant {
-    flex: 1; padding: 13px; border-radius: 12px;
-    border: 2px solid var(--gris-borde); background: var(--gris);
-    font-size: 14px; font-weight: 500; color: var(--texto-suave);
-    cursor: pointer;
-  }
-  .btn-sig {
-    flex: 2; padding: 13px; border-radius: 12px;
-    background: var(--verde-claro); border: none;
-    font-size: 15px; font-weight: 600; color: var(--blanco);
-    cursor: pointer;
-  }
-  .btn-sig:disabled { opacity: .4; cursor: default; }
-
-  /* ── PAUSA ── */
-  #p-pausa {
-    background: rgba(0,0,0,0.85);
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 100;
-    display: none;
-  }
-  #p-pausa.activa { display: flex; flex-direction: column; }
-  .pausa-caja {
-    background: var(--blanco);
-    border-radius: 24px;
-    padding: 32px 24px;
-    width: 100%; max-width: 340px;
-    text-align: center;
-  }
-  .pausa-icono { font-size: 48px; margin-bottom: 12px; }
-  .pausa-titulo { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .pausa-sub { font-size: 14px; color: var(--texto-suave); margin-bottom: 24px; line-height: 1.5; }
-  .pausa-contexto {
-    background: var(--verde-pálido); border-radius: 12px;
-    padding: 12px; margin-bottom: 20px;
-    font-size: 13px; color: var(--verde); font-weight: 500;
-  }
-  .btn-continuar {
-    width: 100%; padding: 16px; border-radius: 14px;
-    background: var(--verde-claro); border: none;
-    font-size: 16px; font-weight: 600; color: var(--blanco);
-    cursor: pointer;
-  }
-
-  /* ── RESUMEN ── */
-  .resumen-titulo { font-size: 16px; font-weight: 700; color: var(--texto); margin-bottom: 12px; }
-  .resumen-fila {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 9px 0; border-bottom: 1px solid var(--gris);
-    gap: 12px;
-  }
-  .resumen-fila:last-child { border: none; }
-  .res-campo { font-size: 13px; color: var(--texto-suave); flex-shrink: 0; }
-  .res-valor { font-size: 13px; font-weight: 600; color: var(--texto); text-align: right; }
-
-  .btn-guardar {
-    width: 100%; padding: 16px; border-radius: 14px;
-    background: var(--verde-claro); border: none;
-    font-size: 16px; font-weight: 700; color: var(--blanco);
-    cursor: pointer; margin-top: 4px;
-  }
-  .btn-corregir {
-    width: 100%; padding: 13px; border-radius: 12px;
-    border: 2px solid var(--gris-borde); background: var(--gris);
-    font-size: 14px; font-weight: 500; color: var(--texto-suave);
-    cursor: pointer; margin-top: 8px;
-  }
-
-  /* ── HISTORIAL ── */
-  .hist-sesion {
-    background: var(--gris); border-radius: 14px;
-    padding: 14px; margin-bottom: 10px; cursor: pointer;
-  }
-  .hist-ses-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-  .hist-ses-apiario { font-size: 14px; font-weight: 600; }
-  .hist-ses-fecha { font-size: 12px; color: var(--texto-suave); }
-  .hist-ses-info { font-size: 12px; color: var(--texto-suave); }
-  .hist-colmena {
-    background: var(--blanco); border: 1px solid var(--gris-borde);
-    border-radius: 10px; padding: 10px 12px; margin-bottom: 6px;
-  }
-  .hist-col-top { display: flex; justify-content: space-between; }
-  .hist-col-num { font-size: 14px; font-weight: 600; }
-  .hist-col-modo { font-size: 11px; color: var(--texto-suave); }
-  .hist-col-detalle { font-size: 12px; color: var(--texto-suave); margin-top: 4px; line-height: 1.5; }
-  .vacio { text-align: center; padding: 40px 20px; color: var(--texto-suave); font-size: 15px; }
-
-  /* ── ESTADO VOZ ── */
-  .estado-voz {
-    font-size: 12px; text-align: center; color: var(--texto-suave);
-    padding: 4px 8px; border-radius: 20px; background: var(--gris);
-    display: inline-block;
-  }
-  .estado-voz.escuchando { background: #fff3cc; color: #7a4500; }
-  .estado-voz.procesando { background: var(--verde-pálido); color: var(--verde); }
-
-  .chips-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .chip {
-    font-size: 11px; padding: 4px 10px; border-radius: 20px;
-    background: var(--gris); color: var(--texto-suave); border: 1px solid var(--gris-borde);
-  }
+/* HISTORIAL */
+.hist-ses{background:var(--gris);border-radius:13px;padding:13px;margin-bottom:8px}
+.hist-ses-top{display:flex;justify-content:space-between;margin-bottom:3px}
+.hist-col{background:#fff;border:1px solid var(--gris-borde);border-radius:9px;padding:9px 12px;margin-bottom:5px}
+.hist-col-top{display:flex;justify-content:space-between}
+.vacio{text-align:center;padding:40px 20px;color:var(--texto-suave);font-size:15px}
 </style>
 </head>
 <body>
 
-<!-- ══ PANTALLA: BIENVENIDA ══ -->
+<!-- ══ BIENVENIDA ══ -->
 <div class="pantalla activa" id="p-bienvenida">
   <div class="logo-circulo">🐝</div>
   <div class="logo-titulo">ApiVoz</div>
   <div class="logo-sub">Registro de colmenas por voz<br>funciona sin internet</div>
-  <button class="btn-inicio" onclick="irA('p-setup')">🎙️ Iniciar revisión</button>
-  <button class="btn-historial" onclick="irA('p-historial')">📋 Ver historial</button>
+  <button class="btn-verde" onclick="irA('p-setup')">🎙️ Iniciar revisión</button>
+  <button class="btn-outline" onclick="irA('p-config')" style="margin-top:0">⚙️ Configurar apiarios</button>
+  <button class="btn-outline" onclick="irA('p-historial')">📋 Ver historial</button>
 </div>
 
-<!-- ══ PANTALLA: SETUP (solo 1 vez por sesión) ══ -->
+<!-- ══ CONFIGURACIÓN DE APIARIOS ══ -->
+<div class="pantalla" id="p-config">
+  <div class="pantalla-interna">
+    <div class="cabecera">
+      <div class="cab-top">
+        <button class="btn-volver" onclick="irA('p-bienvenida')">←</button>
+        <span class="cab-titulo">Mis apiarios</span>
+        <div style="width:36px"></div>
+      </div>
+      <div class="cab-sub">Agrégalos una vez, selecciónalos siempre</div>
+    </div>
+    <div class="contenido">
+      <div>
+        <div class="sec-label">Nombre del apiario</div>
+        <input class="input-txt" id="nuevo-apiario" type="text" placeholder="Ej: El Caimán, La Providencia…" autocomplete="off">
+      </div>
+      <button class="btn-agregar" onclick="agregarApiario()">+ Agregar apiario</button>
+      <div>
+        <div class="sec-label">Apiarios guardados</div>
+        <div class="lista-apiarios" id="lista-apiarios">
+          <div class="vacio" id="sin-apiarios">Aún no hay apiarios. Agrega el primero.</div>
+        </div>
+      </div>
+      <button class="btn-primario" onclick="irA('p-bienvenida')">✓ Listo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SETUP SESIÓN ══ -->
 <div class="pantalla" id="p-setup">
   <div class="pantalla-interna">
     <div class="cabecera">
@@ -373,52 +188,53 @@
         <span class="cab-titulo">Nueva sesión</span>
         <div style="width:36px"></div>
       </div>
-      <div class="cab-sub">Se guarda para toda la sesión</div>
+      <div class="cab-sub">Selecciona apiario y modo</div>
     </div>
     <div class="contenido">
-      <div class="setup-grupo">
-        <div class="setup-label">¿En qué apiario estás hoy?</div>
-        <input class="input-texto" id="setup-apiario" type="text" placeholder="Ej: El Caimán, La Providencia…" autocomplete="off">
+      <div>
+        <div class="sec-label">¿En qué apiario estás hoy?</div>
+        <div class="apiario-lista-sel" id="apiario-lista-sel">
+          <div class="vacio" id="sin-apiarios-setup">
+            Sin apiarios aún. <span style="color:var(--verde);cursor:pointer;font-weight:600" onclick="irA('p-config')">Configura primero →</span>
+          </div>
+        </div>
       </div>
-      <div class="setup-grupo">
-        <div class="setup-label">Tipo de revisión</div>
-        <div class="opciones-grid">
-          <button class="opcion-btn seleccionado" id="btn-expres" onclick="selModo('expres')">
-            ⚡ Exprés<br><span style="font-size:11px;font-weight:400">Mantenimiento · ~90 seg</span>
+      <div>
+        <div class="sec-label">Tipo de revisión</div>
+        <div class="grid-2">
+          <button class="sel-btn act-verde" id="btn-e" onclick="selModo('expres')">
+            ⚡ Exprés<br><span style="font-size:11px;font-weight:400">Mantenimiento</span>
           </button>
-          <button class="opcion-btn modo-completo" id="btn-completo" onclick="selModo('completo')">
-            🔍 Completo<br><span style="font-size:11px;font-weight:400">Flujo néctar · ~4 min</span>
+          <button class="sel-btn" id="btn-c" onclick="selModo('completo')">
+            🔍 Completo<br><span style="font-size:11px;font-weight:400">Flujo néctar</span>
           </button>
         </div>
       </div>
-      <button class="btn-primario" id="btn-empezar" onclick="empezarSesion()">Empezar revisión →</button>
-      <div style="margin-top:16px;padding:12px;background:var(--gris);border-radius:10px;font-size:12px;color:var(--texto-suave)">
-        💡 Di <strong>"pausa"</strong> en cualquier momento para detener la escucha. Di <strong>"continúa"</strong> para retomar.
+      <div style="background:var(--gris);border-radius:10px;padding:11px 13px;font-size:12px;color:var(--texto-suave)">
+        💡 Di <strong>"pausa"</strong> para detener. Di <strong>"continúa"</strong> para retomar.<br>
+        El micrófono estará activo todo el tiempo.
       </div>
+      <button class="btn-primario" id="btn-empezar" onclick="empezarSesion()" disabled>Empezar revisión →</button>
     </div>
   </div>
 </div>
 
-<!-- ══ PANTALLA: REVISIÓN ══ -->
+<!-- ══ REVISIÓN ══ -->
 <div class="pantalla" id="p-revision">
-  <div class="rev-cabecera">
+  <div class="rev-cab">
     <div class="rev-top">
-      <div>
-        <div class="rev-apiario" id="rev-apiario-label">Apiario</div>
-        <div style="color:white;font-weight:700;font-size:16px" id="rev-colmena-label">Colmena —</div>
+      <div class="rev-info-col">
+        <div id="lbl-apiario">Apiario</div>
+        <div id="lbl-colmena">Colmena —</div>
       </div>
-      <span class="rev-modo-badge badge-expres" id="rev-modo-label">Exprés</span>
+      <span class="rev-badge badge-e" id="lbl-modo">⚡ Exprés</span>
     </div>
-    <div class="progreso-barra">
-      <div class="progreso-fill" id="progreso-fill" style="width:0%"></div>
-    </div>
+    <div class="barra"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
   </div>
-  <div class="rev-cuerpo" id="rev-cuerpo">
-    <!-- Contenido dinámico -->
-  </div>
+  <div class="rev-cuerpo" id="rev-cuerpo"></div>
 </div>
 
-<!-- ══ PANTALLA: RESUMEN ══ -->
+<!-- ══ RESUMEN ══ -->
 <div class="pantalla" id="p-resumen">
   <div class="pantalla-interna">
     <div class="cabecera">
@@ -427,14 +243,13 @@
         <span class="cab-titulo">Confirmar registro</span>
         <div style="width:36px"></div>
       </div>
-      <div class="cab-sub" id="res-colmena-label">Colmena —</div>
+      <div class="cab-sub" id="lbl-res-colmena">Colmena —</div>
     </div>
-    <div class="contenido" id="resumen-contenido">
-    </div>
+    <div class="contenido" id="res-contenido"></div>
   </div>
 </div>
 
-<!-- ══ PANTALLA: HISTORIAL ══ -->
+<!-- ══ HISTORIAL ══ -->
 <div class="pantalla" id="p-historial">
   <div class="pantalla-interna">
     <div class="cabecera">
@@ -443,571 +258,549 @@
         <span class="cab-titulo">Historial</span>
         <div style="width:36px"></div>
       </div>
-      <div class="cab-sub">Todas las revisiones guardadas</div>
+      <div class="cab-sub">Revisiones guardadas</div>
     </div>
-    <div class="contenido" id="historial-contenido">
-    </div>
+    <div class="contenido" id="hist-contenido"></div>
   </div>
 </div>
 
-<!-- ══ OVERLAY: PAUSA ══ -->
-<div id="p-pausa">
+<!-- ══ OVERLAY PAUSA ══ -->
+<div id="overlay-pausa">
   <div class="pausa-caja">
     <div class="pausa-icono">⏸️</div>
     <div class="pausa-titulo">Sesión pausada</div>
-    <div class="pausa-sub">Habla con tranquilidad.<br>La app no está escuchando.</div>
-    <div class="pausa-contexto" id="pausa-contexto">—</div>
+    <div class="pausa-sub">La app no está escuchando.<br>Habla con tranquilidad.</div>
+    <div class="pausa-ctx" id="pausa-ctx">—</div>
     <button class="btn-continuar" onclick="reanudar()">🎙️ Continúa</button>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════
-//  ESTADO GLOBAL
-// ══════════════════════════════════════════
-var estado = {
-  apiario: '',
-  modo: 'expres',
-  colmenaActual: '',
-  pasoActual: 0,
-  respuestas: {},
-  pausado: false,
-  escuchando: false,
-  sesiones: []
+// ════════════════════════════════════
+//  ESTADO
+// ════════════════════════════════════
+var S = {
+  apiario: '', modo: 'expres',
+  pasoActual: 0, respuestas: {},
+  pausado: false, escuchando: false,
+  apiarios: []
 };
 
-// ══════════════════════════════════════════
-//  FLUJOS DE PREGUNTAS
-// ══════════════════════════════════════════
-var PREGUNTAS_EXPRES = [
-  { id: 'colmena', texto: '¿Qué colmena vas a revisar?', tipo: 'texto', hint: 'Di: "la 23", "colmena 23", "número 23"' },
-  { id: 'animo', texto: '¿Cómo están las abejas?', tipo: 'opciones', opciones: ['Calmadas', 'Agresivas'], hint: 'Di el ánimo de la colonia' },
-  { id: 'reina', texto: '¿Cómo está la reina?', tipo: 'opciones', opciones: ['Óptima', 'Poca postura', 'En cambio', 'No encontrada'], hint: 'Di el estado de la reina' },
-  { id: 'cuadros_cria', texto: '¿Cuántos cuadros de cría?', tipo: 'numero', hint: 'Di: "siete", "hay siete", "siete cuadros"' },
-  { id: 'cuadros_alimento', texto: '¿Cuántos de alimento?', tipo: 'numero', hint: 'Di el número de cuadros de alimento' },
-  { id: 'necesidades', texto: '¿Necesita alza, alimentación o cera?', tipo: 'multiopcion', opciones: ['Alza', 'Alimentación', 'Cera', 'Nada'], hint: 'Puedes seleccionar varias o decir "nada"' },
-  { id: 'enfermedad', texto: '¿Alguna enfermedad o plaga?', tipo: 'opciones', opciones: ['No', 'Sí - Varroa', 'Sí - Loque', 'Sí - Otra'], hint: 'Di "no" o el tipo de problema' },
-  { id: 'notas', texto: '¿Algo más? (opcional)', tipo: 'texto_libre', hint: 'Di lo que necesites o "nada" para saltar' }
+// ════════════════════════════════════
+//  PREGUNTAS
+// ════════════════════════════════════
+var PE = [
+  {id:'colmena',     txt:'¿Qué colmena?',                          tipo:'texto',      hint:'Di: "la 23", "colmena 23"'},
+  {id:'animo',       txt:'¿Cómo están las abejas?',                tipo:'opc',        ops:['Calmadas','Agresivas']},
+  {id:'reina',       txt:'¿Cómo está la reina?',                   tipo:'opc',        ops:['Óptima','Poca postura','En cambio','No encontrada']},
+  {id:'cria',        txt:'¿Cuántos cuadros de cría?',              tipo:'num',        hint:'Di el número'},
+  {id:'alimento',    txt:'¿Cuántos de alimento?',                  tipo:'num',        hint:'Di el número'},
+  {id:'necesidades', txt:'¿Necesita alza, alimentación o cera?',   tipo:'multi',      ops:['Alza','Alimentación','Cera','Nada']},
+  {id:'enfermedad',  txt:'¿Alguna enfermedad o plaga?',            tipo:'opc',        ops:['No','Sí - Varroa','Sí - Loque','Sí - Otra']},
+  {id:'notas',       txt:'¿Algo más?',                             tipo:'libre',      hint:'Di "nada" para saltar'}
 ];
 
-var PREGUNTAS_COMPLETO = PREGUNTAS_EXPRES.concat([
-  { id: 'cuadros_totales', texto: '¿Cuántos cuadros totales en cámara de cría?', tipo: 'numero', hint: 'Total de marcos en la cámara' },
-  { id: 'patron_puesta', texto: '¿Patrón de puesta?', tipo: 'opciones', opciones: ['Bueno', 'Irregular', 'Malo'], hint: 'Distribución de los huevos' },
-  { id: 'cera_nueva', texto: '¿Cuántos cuadros de cera nueva?', tipo: 'numero', hint: 'Cera recién construida' },
-  { id: 'sin_trabajar', texto: '¿Cuántos sin trabajar?', tipo: 'numero', hint: 'Cuadros que las abejas no han tocado' },
-  { id: 'vigor', texto: '¿Vigor de la colonia?', tipo: 'opciones', opciones: ['Fuerte', 'Media', 'Débil'], hint: 'Población y actividad general' },
-  { id: 'zanganos', texto: '¿Exceso de zánganos?', tipo: 'opciones', opciones: ['No', 'Sí'], hint: 'Di "no" o "sí"' },
-  { id: 'tiene_alza', texto: '¿Tiene alza melifera?', tipo: 'opciones', opciones: ['No', 'Sí'], hint: 'Di "no" o "sí"' },
-  { id: 'cuadros_alza', texto: '¿Cuántos cuadros totales en alza?', tipo: 'numero', condicional: { campo: 'tiene_alza', valor: 'Sí' }, hint: 'Total de marcos en el alza' },
-  { id: 'miel_sin_opercular', texto: '¿Cuántos con miel sin opercular?', tipo: 'numero', condicional: { campo: 'tiene_alza', valor: 'Sí' }, hint: 'Miel aún abierta' },
-  { id: 'miel_operculada', texto: '¿Cuántos con miel operculada?', tipo: 'numero', condicional: { campo: 'tiene_alza', valor: 'Sí' }, hint: 'Miel sellada lista para cosechar' },
-  { id: 'cera_alza', texto: '¿Cuántos de cera en construcción?', tipo: 'numero', condicional: { campo: 'tiene_alza', valor: 'Sí' }, hint: 'Cera que están construyendo' },
-  { id: 'peso_alza', texto: '¿Peso estimado del alza (kg)?', tipo: 'numero', condicional: { campo: 'tiene_alza', valor: 'Sí' }, hint: 'Di los kilos estimados' },
-  { id: 'division', texto: '¿Se hizo división o núcleo?', tipo: 'opciones', opciones: ['No', 'Sí'], hint: 'Di "no" o "sí"' },
-  { id: 'colmena_origen', texto: '¿Cuál es la colmena origen?', tipo: 'texto', condicional: { campo: 'division', valor: 'Sí' }, hint: 'Número de la colmena de donde viene' }
+var PC = PE.concat([
+  {id:'tot_cria',    txt:'¿Cuántos cuadros totales en cámara?',    tipo:'num'},
+  {id:'patron',      txt:'¿Patrón de puesta?',                     tipo:'opc',        ops:['Bueno','Irregular','Malo']},
+  {id:'cera_nueva',  txt:'¿Cuántos de cera nueva?',               tipo:'num'},
+  {id:'sin_trab',    txt:'¿Cuántos sin trabajar?',                 tipo:'num'},
+  {id:'vigor',       txt:'¿Vigor de la colonia?',                  tipo:'opc',        ops:['Fuerte','Media','Débil']},
+  {id:'zanganos',    txt:'¿Exceso de zánganos?',                   tipo:'opc',        ops:['No','Sí']},
+  {id:'tiene_alza',  txt:'¿Tiene alza melifera?',                  tipo:'opc',        ops:['No','Sí']},
+  {id:'tot_alza',    txt:'¿Cuántos cuadros en alza?',              tipo:'num',        cond:{c:'tiene_alza',v:'Sí'}},
+  {id:'sin_op',      txt:'¿Cuántos con miel sin opercular?',       tipo:'num',        cond:{c:'tiene_alza',v:'Sí'}},
+  {id:'operculada',  txt:'¿Cuántos con miel operculada?',          tipo:'num',        cond:{c:'tiene_alza',v:'Sí'}},
+  {id:'cera_alza',   txt:'¿Cuántos de cera en construcción?',      tipo:'num',        cond:{c:'tiene_alza',v:'Sí'}},
+  {id:'peso_alza',   txt:'¿Peso estimado del alza en kilos?',      tipo:'num',        cond:{c:'tiene_alza',v:'Sí'}},
+  {id:'division',    txt:'¿Se hizo división o núcleo?',            tipo:'opc',        ops:['No','Sí']},
+  {id:'col_origen',  txt:'¿Cuál es la colmena origen?',            tipo:'texto',      cond:{c:'division',v:'Sí'}}
 ]);
 
-// ══════════════════════════════════════════
-//  RECONOCIMIENTO DE VOZ
-// ══════════════════════════════════════════
-var reconocedor = null;
-var soportaVoz = ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+var LABELS = {
+  colmena:'Colmena', animo:'Ánimo', reina:'Reina', cria:'Cuadros cría',
+  alimento:'Cuadros alimento', necesidades:'Necesidades', enfermedad:'Enfermedad',
+  notas:'Notas', tot_cria:'Cuadros totales', patron:'Patrón puesta',
+  cera_nueva:'Cera nueva', sin_trab:'Sin trabajar', vigor:'Vigor',
+  zanganos:'Exc. zánganos', tiene_alza:'Tiene alza', tot_alza:'Cuadros alza',
+  sin_op:'Sin opercular', operculada:'Operculada', cera_alza:'Cera alza',
+  peso_alza:'Peso alza (kg)', division:'División', col_origen:'Colmena origen'
+};
 
-function iniciarReconocedor() {
+// ════════════════════════════════════
+//  APIARIOS (localStorage)
+// ════════════════════════════════════
+function cargarApiarios() {
+  S.apiarios = JSON.parse(localStorage.getItem('apivoz_apiarios') || '[]');
+}
+function guardarApiarios() {
+  localStorage.setItem('apivoz_apiarios', JSON.stringify(S.apiarios));
+}
+function agregarApiario() {
+  var v = document.getElementById('nuevo-apiario').value.trim();
+  if (!v) return;
+  if (S.apiarios.includes(v)) { alert('Ese apiario ya existe'); return; }
+  S.apiarios.push(v);
+  guardarApiarios();
+  document.getElementById('nuevo-apiario').value = '';
+  renderApiarios();
+}
+function borrarApiario(i) {
+  S.apiarios.splice(i, 1);
+  guardarApiarios();
+  renderApiarios();
+}
+function renderApiarios() {
+  var lista = document.getElementById('lista-apiarios');
+  var sin = document.getElementById('sin-apiarios');
+  if (!S.apiarios.length) { lista.innerHTML = ''; lista.appendChild(sin); sin.style.display='block'; return; }
+  sin.style.display = 'none';
+  lista.innerHTML = '';
+  S.apiarios.forEach(function(a, i) {
+    var d = document.createElement('div');
+    d.className = 'item-apiario';
+    d.innerHTML = '<span>📍 ' + a + '</span><button class="btn-borrar" onclick="borrarApiario('+i+')">✕</button>';
+    lista.appendChild(d);
+  });
+}
+function renderApiariosSel() {
+  var cont = document.getElementById('apiario-lista-sel');
+  var sin = document.getElementById('sin-apiarios-setup');
+  if (!S.apiarios.length) { cont.innerHTML = ''; cont.appendChild(sin); sin.style.display='block'; return; }
+  sin.style.display = 'none';
+  cont.innerHTML = '';
+  S.apiarios.forEach(function(a) {
+    var b = document.createElement('button');
+    b.className = 'apiario-sel-btn' + (S.apiario === a ? ' sel' : '');
+    b.innerHTML = '<span class="apiario-icono">📍</span>' + a;
+    b.onclick = function() { S.apiario = a; renderApiariosSel(); actualizarBtnEmpezar(); };
+    cont.appendChild(b);
+  });
+}
+function actualizarBtnEmpezar() {
+  document.getElementById('btn-empezar').disabled = !S.apiario;
+}
+
+// ════════════════════════════════════
+//  RECONOCIMIENTO DE VOZ CONTINUO
+// ════════════════════════════════════
+var rec = null;
+var soportaVoz = ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+var reiniciarTimer = null;
+
+function initRec() {
   if (!soportaVoz) return;
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  reconocedor = new SR();
-  reconocedor.lang = 'es-CO';
-  reconocedor.continuous = false;
-  reconocedor.interimResults = true;
+  rec = new SR();
+  rec.lang = 'es-CO';
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.maxAlternatives = 3;
 
-  reconocedor.onresult = function(e) {
-    var transcripcion = '';
+  rec.onstart = function() {
+    S.escuchando = true;
+    actualizarEstadoMic();
+  };
+
+  rec.onresult = function(e) {
+    var final = '';
+    var interim = '';
     for (var i = e.resultIndex; i < e.results.length; i++) {
-      transcripcion += e.results[i][0].transcript;
+      if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
     }
-    var texto = transcripcion.trim().toLowerCase();
+    // Mostrar interim en vivo
+    var lv = document.getElementById('voz-live');
+    if (lv && interim) lv.textContent = interim;
 
-    // Comandos globales
-    if (texto.includes('pausa')) { pausar(); return; }
-    if (texto.includes('continúa') || texto.includes('continua')) { reanudar(); return; }
-
-    if (e.results[e.results.length - 1].isFinal) {
-      procesarRespuestaVoz(transcripcion.trim());
-    } else {
-      // Mostrar transcripción en tiempo real
-      var el = document.getElementById('respuesta-voz-live');
-      if (el) el.textContent = transcripcion;
+    if (final.trim()) {
+      var txt = final.trim().toLowerCase();
+      if (txt.includes('pausa')) { pausar(); return; }
+      if (txt.includes('continúa') || txt.includes('continua')) { reanudar(); return; }
+      procesarVoz(final.trim());
     }
   };
 
-  reconocedor.onerror = function(e) {
-    estado.escuchando = false;
-    actualizarEstadoMic(false);
+  rec.onerror = function(e) {
+    S.escuchando = false;
+    actualizarEstadoMic();
+    // Reiniciar automáticamente salvo que sea pausa o no haya permiso
+    if (e.error !== 'not-allowed' && e.error !== 'service-not-allowed' && !S.pausado) {
+      reiniciarTimer = setTimeout(iniciarEscucha, 800);
+    }
   };
 
-  reconocedor.onend = function() {
-    estado.escuchando = false;
-    actualizarEstadoMic(false);
+  rec.onend = function() {
+    S.escuchando = false;
+    actualizarEstadoMic();
+    // Reinicio automático para mantener escucha continua
+    if (!S.pausado) {
+      reiniciarTimer = setTimeout(iniciarEscucha, 300);
+    }
   };
 }
 
-function escuchar() {
-  if (!soportaVoz || estado.pausado) return;
-  if (estado.escuchando && reconocedor) { reconocedor.stop(); return; }
-  if (!reconocedor) iniciarReconocedor();
-  try {
-    reconocedor.start();
-    estado.escuchando = true;
-    actualizarEstadoMic(true);
-  } catch(e) {}
+function iniciarEscucha() {
+  if (!rec) initRec();
+  if (S.pausado || S.escuchando) return;
+  try { rec.start(); } catch(e) {}
 }
 
-function actualizarEstadoMic(activo) {
-  var btn = document.getElementById('btn-mic');
-  if (!btn) return;
-  if (activo) { btn.classList.add('activo'); }
-  else { btn.classList.remove('activo'); }
-  var hint = document.getElementById('hint-mic');
-  if (hint) hint.textContent = activo ? 'Escuchando… habla ahora' : 'Toca el micrófono o habla';
+function detenerEscucha() {
+  S.escuchando = false;
+  clearTimeout(reiniciarTimer);
+  if (rec) try { rec.stop(); } catch(e) {}
+  actualizarEstadoMic();
 }
 
-function hablar(texto, callback) {
-  if (!('speechSynthesis' in window)) { if (callback) callback(); return; }
+function actualizarEstadoMic() {
+  var el = document.getElementById('mic-estado');
+  if (!el) return;
+  el.className = 'mic-estado' + (S.pausado ? ' pausado' : (S.escuchando ? ' escuchando' : ''));
+  var txt = document.getElementById('mic-texto');
+  if (txt) txt.textContent = S.pausado ? '⏸ Pausado — di "continúa"' : (S.escuchando ? 'Escuchando…' : 'Iniciando micrófono…');
+}
+
+// ════════════════════════════════════
+//  VOZ SALIDA (TTS)
+// ════════════════════════════════════
+function hablar(texto, cb) {
+  if (!('speechSynthesis' in window)) { if (cb) cb(); return; }
+  detenerEscucha();
   window.speechSynthesis.cancel();
   var u = new SpeechSynthesisUtterance(texto);
-  u.lang = 'es-CO';
-  u.rate = 1.05;
-  u.pitch = 1;
-  u.onend = function() { if (callback) setTimeout(callback, 300); };
+  u.lang = 'es-CO'; u.rate = 1.05;
+  u.onend = function() {
+    if (cb) setTimeout(cb, 200);
+    else setTimeout(iniciarEscucha, 200);
+  };
   window.speechSynthesis.speak(u);
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════
 //  NAVEGACIÓN
-// ══════════════════════════════════════════
-function irA(pantalla) {
-  document.querySelectorAll('.pantalla').forEach(function(p) { p.classList.remove('activa'); });
-  var el = document.getElementById(pantalla);
-  if (el) el.classList.add('activa');
-  if (pantalla === 'p-historial') cargarHistorial();
+// ════════════════════════════════════
+function irA(p) {
+  document.querySelectorAll('.pantalla').forEach(function(el) { el.classList.remove('activa'); });
+  document.getElementById(p).classList.add('activa');
+  if (p === 'p-config') { cargarApiarios(); renderApiarios(); }
+  if (p === 'p-setup') { cargarApiarios(); renderApiariosSel(); actualizarBtnEmpezar(); }
+  if (p === 'p-historial') renderHistorial();
+  if (p !== 'p-revision' && p !== 'p-resumen') detenerEscucha();
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════
 //  SETUP
-// ══════════════════════════════════════════
-function selModo(modo) {
-  estado.modo = modo;
-  document.getElementById('btn-expres').classList.toggle('seleccionado', modo === 'expres');
-  document.getElementById('btn-completo').classList.toggle('seleccionado', modo === 'completo');
-  document.getElementById('btn-expres').classList.toggle('modo-completo', false);
-  document.getElementById('btn-completo').classList.toggle('modo-completo', modo === 'completo');
+// ════════════════════════════════════
+function selModo(m) {
+  S.modo = m;
+  document.getElementById('btn-e').className = 'sel-btn' + (m==='expres' ? ' act-verde' : '');
+  document.getElementById('btn-c').className = 'sel-btn' + (m==='completo' ? ' act-miel' : '');
 }
 
 function empezarSesion() {
-  var apiario = document.getElementById('setup-apiario').value.trim();
-  if (!apiario) { alert('Por favor escribe el nombre del apiario'); return; }
-  estado.apiario = apiario;
-  estado.respuestas = {};
-  estado.pasoActual = 0;
-
-  document.getElementById('rev-apiario-label').textContent = '📍 ' + estado.apiario;
-  document.getElementById('rev-modo-label').textContent = estado.modo === 'expres' ? '⚡ Exprés' : '🔍 Completo';
-  document.getElementById('rev-modo-label').className = 'rev-modo-badge ' + (estado.modo === 'expres' ? 'badge-expres' : 'badge-completo');
-
+  if (!S.apiario) return;
+  S.respuestas = {}; S.pasoActual = 0;
+  document.getElementById('lbl-apiario').textContent = '📍 ' + S.apiario;
+  document.getElementById('lbl-modo').textContent = S.modo === 'expres' ? '⚡ Exprés' : '🔍 Completo';
+  document.getElementById('lbl-modo').className = 'rev-badge ' + (S.modo === 'expres' ? 'badge-e' : 'badge-c');
   irA('p-revision');
-  iniciarReconocedor();
+  initRec();
   mostrarPaso(0);
-  hablar('Sesión iniciada en ' + apiario + '. ' + obtenerPreguntas()[0].texto);
+  hablar('Sesión en ' + S.apiario + '. ' + pregs()[0].txt);
 }
 
-// ══════════════════════════════════════════
-//  REVISIÓN - FLUJO DE PASOS
-// ══════════════════════════════════════════
-function obtenerPreguntas() {
-  return estado.modo === 'expres' ? PREGUNTAS_EXPRES : PREGUNTAS_COMPLETO;
+// ════════════════════════════════════
+//  FLUJO DE REVISIÓN
+// ════════════════════════════════════
+function pregs() { return S.modo === 'expres' ? PE : PC; }
+
+function visible(i) {
+  var p = pregs()[i];
+  if (!p) return false;
+  if (!p.cond) return true;
+  return S.respuestas[p.cond.c] === p.cond.v;
 }
 
-function pasoEsVisible(idx) {
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[idx];
-  if (!p.condicional) return true;
-  return estado.respuestas[p.condicional.campo] === p.condicional.valor;
-}
-
-function siguientePasoVisible(desde) {
-  var preguntas = obtenerPreguntas();
-  for (var i = desde + 1; i < preguntas.length; i++) {
-    if (pasoEsVisible(i)) return i;
-  }
+function sigVisible(desde) {
+  var ps = pregs();
+  for (var i = desde+1; i < ps.length; i++) if (visible(i)) return i;
   return -1;
 }
 
-function anteriorPasoVisible(desde) {
-  for (var i = desde - 1; i >= 0; i--) {
-    if (pasoEsVisible(i)) return i;
-  }
+function antVisible(desde) {
+  for (var i = desde-1; i >= 0; i--) if (visible(i)) return i;
   return -1;
 }
 
 function mostrarPaso(idx) {
-  var preguntas = obtenerPreguntas();
-  if (idx >= preguntas.length) { mostrarResumen(); return; }
-  if (!pasoEsVisible(idx)) { mostrarPaso(siguientePasoVisible(idx - 1)); return; }
+  var ps = pregs();
+  if (idx >= ps.length) { mostrarResumen(); return; }
+  if (!visible(idx)) { mostrarPaso(sigVisible(idx-1)); return; }
+  S.pasoActual = idx;
+  var p = ps[idx];
+  var total = ps.length;
+  var pct = Math.round((idx/total)*100);
+  document.getElementById('barra-fill').style.width = pct + '%';
+  if (S.respuestas.colmena) document.getElementById('lbl-colmena').textContent = 'Colmena ' + S.respuestas.colmena;
 
-  estado.pasoActual = idx;
-  var p = preguntas[idx];
-
-  // Actualizar colmena en cabecera
-  if (estado.respuestas.colmena) {
-    document.getElementById('rev-colmena-label').textContent = 'Colmena ' + estado.respuestas.colmena;
-  }
-
-  // Progreso
-  var total = preguntas.length;
-  var pct = Math.round((idx / total) * 100);
-  document.getElementById('progreso-fill').style.width = pct + '%';
-
+  var r = S.respuestas[p.id];
   var html = '';
-  html += '<div class="pregunta-box">';
-  html += '<div class="pregunta-num">Pregunta ' + (idx + 1) + ' de ' + total + '</div>';
-  html += '<div class="pregunta-texto">' + p.texto + '</div>';
-  if (p.hint) html += '<div class="pregunta-hint">💬 ' + p.hint + '</div>';
+
+  // Estado micrófono
+  html += '<div class="mic-estado' + (S.escuchando ? ' escuchando' : '') + '" id="mic-estado">';
+  html += '<div class="mic-dot"></div>';
+  html += '<span class="mic-texto" id="mic-texto">' + (S.escuchando ? 'Escuchando…' : 'Iniciando micrófono…') + '</span>';
   html += '</div>';
 
-  // Respuesta actual si existe
-  var respActual = estado.respuestas[p.id];
+  // Pregunta
+  html += '<div class="preg-box">';
+  html += '<div class="preg-num">Pregunta ' + (idx+1) + ' de ' + total + '</div>';
+  html += '<div class="preg-texto">' + p.txt + '</div>';
+  if (p.hint) html += '<div class="preg-hint">💬 ' + p.hint + '</div>';
+  html += '</div>';
 
-  if (p.tipo === 'texto' || p.tipo === 'texto_libre') {
-    html += '<div class="respuesta-area ' + (respActual ? 'tiene-texto' : '') + '" id="resp-area">';
-    html += '<span id="respuesta-voz-live" class="respuesta-texto">' + (respActual || '') + '</span>';
-    if (!respActual) html += '<span class="respuesta-placeholder" style="' + (respActual ? 'display:none' : '') + '">Esperando respuesta…</span>';
+  // Lo que va escuchando en vivo
+  html += '<div class="resp-area' + (r !== undefined && r !== '' ? ' ok' : '') + '" id="resp-area">';
+  html += '<span id="voz-live" class="resp-texto">' + (r !== undefined && r !== '' ? String(r) : '') + '</span>';
+  if (r === undefined || r === '') html += '<span class="resp-ph">Esperando tu respuesta…</span>';
+  html += '</div>';
+
+  // Controles según tipo
+  if (p.tipo === 'opc') {
+    var cols = p.ops.length <= 2 ? '1fr 1fr' : (p.ops.length === 3 ? '1fr 1fr 1fr' : '1fr 1fr');
+    html += '<div class="opciones-grid" style="grid-template-columns:' + cols + '">';
+    p.ops.forEach(function(op) {
+      html += '<button class="opc-btn' + (r===op?' sel':'') + '" onclick="selOpc(\'' + op.replace(/'/g,"\\'") + '\')">' + op + '</button>';
+    });
     html += '</div>';
-  } else if (p.tipo === 'numero') {
-    var val = respActual !== undefined ? parseInt(respActual) : 0;
+  } else if (p.tipo === 'multi') {
+    var sels = r ? r.split(', ') : [];
+    html += '<div class="opciones-grid" style="grid-template-columns:1fr 1fr">';
+    p.ops.forEach(function(op) {
+      html += '<button class="opc-btn' + (sels.includes(op)?' sel':'') + '" onclick="toggleMulti(\'' + op.replace(/'/g,"\\'") + '\')">' + op + '</button>';
+    });
+    html += '</div>';
+  } else if (p.tipo === 'num') {
+    var val = r !== undefined ? parseInt(r) : 0;
     html += '<div class="contador-row">';
-    html += '<button class="btn-contador" onclick="cambiarContador(-1)">−</button>';
-    html += '<span class="contador-val" id="contador-val">' + val + '</span>';
-    html += '<button class="btn-contador" onclick="cambiarContador(1)">+</button>';
-    html += '<span class="contador-label">cuadros</span>';
-    html += '</div>';
-    html += '<div class="respuesta-area ' + (respActual !== undefined ? 'tiene-texto' : '') + '" id="resp-area">';
-    html += '<span id="respuesta-voz-live" class="respuesta-texto">' + (respActual !== undefined ? 'Registrado: ' + respActual : '') + '</span>';
-    if (respActual === undefined) html += '<span class="respuesta-placeholder">Di el número o usa los botones</span>';
-    html += '</div>';
-  } else if (p.tipo === 'opciones') {
-    var cols = p.opciones.length <= 2 ? 'dos' : (p.opciones.length === 3 ? 'tres' : 'cuatro');
-    html += '<div class="botones-opciones ' + cols + '">';
-    p.opciones.forEach(function(op) {
-      var sel = respActual === op ? 'sel' : '';
-      html += '<button class="btn-opcion ' + sel + '" onclick="selOp(\'' + op.replace(/'/g, "\\'") + '\')">' + op + '</button>';
-    });
-    html += '</div>';
-    html += '<div class="respuesta-area ' + (respActual ? 'tiene-texto' : '') + '" id="resp-area" style="margin-top:8px">';
-    html += '<span id="respuesta-voz-live" class="respuesta-texto">' + (respActual ? 'Seleccionado: ' + respActual : '') + '</span>';
-    if (!respActual) html += '<span class="respuesta-placeholder">Selecciona o di la opción</span>';
-    html += '</div>';
-  } else if (p.tipo === 'multiopcion') {
-    var seleccionados = respActual ? respActual.split(', ') : [];
-    html += '<div class="botones-opciones dos">';
-    p.opciones.forEach(function(op) {
-      var sel = seleccionados.includes(op) ? 'sel' : '';
-      html += '<button class="btn-opcion ' + sel + '" onclick="toggleMultiOp(\'' + op.replace(/'/g, "\\'") + '\')">' + op + '</button>';
-    });
-    html += '</div>';
-    html += '<div class="respuesta-area ' + (respActual ? 'tiene-texto' : '') + '" id="resp-area" style="margin-top:8px">';
-    html += '<span id="respuesta-voz-live" class="respuesta-texto">' + (respActual || '') + '</span>';
-    if (!respActual) html += '<span class="respuesta-placeholder">Selecciona una o varias</span>';
+    html += '<button class="cnt-btn" onclick="cambiarCnt(-1)">−</button>';
+    html += '<span class="cnt-val" id="cnt-val">' + val + '</span>';
+    html += '<button class="cnt-btn" onclick="cambiarCnt(1)">+</button>';
+    html += '<span class="cnt-label">cuadros</span>';
     html += '</div>';
   }
-
-  // Micrófono
-  html += '<div style="text-align:center">';
-  html += '<button class="mic-grande" id="btn-mic" onclick="escuchar()" aria-label="Activar micrófono">';
-  html += '<svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>';
-  html += '</button>';
-  html += '<div class="hint-mic" id="hint-mic">Toca el micrófono o habla</div>';
-  html += '</div>';
 
   // Navegación
   html += '<div class="nav-row">';
-  if (idx > 0) html += '<button class="btn-ant" onclick="irPasoAnterior()">← Atrás</button>';
-  var puedeAvanzar = (respActual !== undefined && respActual !== '') || p.tipo === 'texto_libre';
-  html += '<button class="btn-sig" id="btn-sig" onclick="irSiguientePaso()" ' + (puedeAvanzar ? '' : 'disabled') + '>';
-  html += (siguientePasoVisible(idx) === -1 ? '✓ Ver resumen' : 'Siguiente →') + '</button>';
+  if (idx > 0) html += '<button class="btn-ant" onclick="irAnt()">← Atrás</button>';
+  var puedeAvanzar = (r !== undefined && r !== '') || p.tipo === 'libre' || p.tipo === 'num';
+  html += '<button class="btn-sig" id="btn-sig" onclick="irSig()"' + (puedeAvanzar?'':' disabled') + '>';
+  html += (sigVisible(idx) === -1 ? '✓ Ver resumen' : 'Siguiente →') + '</button>';
   html += '</div>';
 
   document.getElementById('rev-cuerpo').innerHTML = html;
 }
 
-function cambiarContador(delta) {
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  var el = document.getElementById('contador-val');
-  var val = Math.max(0, parseInt(el.textContent) + delta);
-  el.textContent = val;
-  estado.respuestas[p.id] = val;
-  var area = document.getElementById('resp-area');
-  var live = document.getElementById('respuesta-voz-live');
-  if (area) area.className = 'respuesta-area tiene-texto';
-  if (live) live.textContent = 'Registrado: ' + val;
+function selOpc(op) {
+  S.respuestas[pregs()[S.pasoActual].id] = op;
+  setTimeout(irSig, 400);
+}
+
+function toggleMulti(op) {
+  var p = pregs()[S.pasoActual];
+  var actual = S.respuestas[p.id] ? S.respuestas[p.id].split(', ') : [];
+  if (op === 'Nada') { S.respuestas[p.id] = 'Nada'; }
+  else {
+    var sinNada = actual.filter(function(x){return x!=='Nada';});
+    var ix = sinNada.indexOf(op);
+    if (ix >= 0) sinNada.splice(ix,1); else sinNada.push(op);
+    S.respuestas[p.id] = sinNada.length ? sinNada.join(', ') : undefined;
+  }
+  mostrarPaso(S.pasoActual);
+}
+
+function cambiarCnt(d) {
+  var el = document.getElementById('cnt-val');
+  var v = Math.max(0, parseInt(el.textContent) + d);
+  el.textContent = v;
+  S.respuestas[pregs()[S.pasoActual].id] = v;
   var btn = document.getElementById('btn-sig');
   if (btn) btn.disabled = false;
+  var ra = document.getElementById('resp-area');
+  var lv = document.getElementById('voz-live');
+  if (ra) ra.className = 'resp-area ok';
+  if (lv) lv.textContent = v + ' cuadros';
 }
 
-function selOp(op) {
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  estado.respuestas[p.id] = op;
-  mostrarPaso(estado.pasoActual);
-}
-
-function toggleMultiOp(op) {
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  var actual = estado.respuestas[p.id] ? estado.respuestas[p.id].split(', ') : [];
-  if (op === 'Nada') {
-    estado.respuestas[p.id] = 'Nada';
-  } else {
-    var idx = actual.indexOf(op);
-    var sinNada = actual.filter(function(x) { return x !== 'Nada'; });
-    if (idx >= 0) sinNada.splice(sinNada.indexOf(op), 1);
-    else sinNada.push(op);
-    estado.respuestas[p.id] = sinNada.length ? sinNada.join(', ') : undefined;
-  }
-  mostrarPaso(estado.pasoActual);
-}
-
-function procesarRespuestaVoz(texto) {
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  var textoLower = texto.toLowerCase();
-
-  if (p.tipo === 'numero') {
-    var num = extraerNumero(textoLower);
-    if (num !== null) {
-      var el = document.getElementById('contador-val');
-      if (el) el.textContent = num;
-      estado.respuestas[p.id] = num;
-      var area = document.getElementById('resp-area');
-      var live = document.getElementById('respuesta-voz-live');
-      if (area) area.className = 'respuesta-area tiene-texto';
-      if (live) live.textContent = 'Registrado: ' + num;
-      var btn = document.getElementById('btn-sig');
-      if (btn) btn.disabled = false;
-    }
-  } else if (p.tipo === 'opciones') {
-    var encontrada = null;
-    p.opciones.forEach(function(op) {
-      if (textoLower.includes(op.toLowerCase().split(' ')[0])) encontrada = op;
-    });
-    if (encontrada) {
-      estado.respuestas[p.id] = encontrada;
-      mostrarPaso(estado.pasoActual);
-    }
-  } else if (p.tipo === 'texto' || p.tipo === 'texto_libre') {
-    if (textoLower === 'nada' || textoLower === 'nada más') {
-      if (p.tipo === 'texto_libre') { irSiguientePaso(); return; }
-    }
-    estado.respuestas[p.id] = texto;
-    var live2 = document.getElementById('respuesta-voz-live');
-    var area2 = document.getElementById('resp-area');
-    if (live2) live2.textContent = texto;
-    if (area2) area2.className = 'respuesta-area tiene-texto';
-    var btn2 = document.getElementById('btn-sig');
-    if (btn2) btn2.disabled = false;
-  } else if (p.tipo === 'multiopcion') {
-    var opEncontrada = null;
-    p.opciones.forEach(function(op) {
-      if (textoLower.includes(op.toLowerCase())) opEncontrada = op;
-    });
-    if (opEncontrada) toggleMultiOp(opEncontrada);
-  }
-}
-
-function extraerNumero(texto) {
-  var palabras = { 'cero':0,'uno':1,'una':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,'seis':6,'siete':7,'ocho':8,'nueve':9,'diez':10,'once':11,'doce':12,'trece':13,'catorce':14,'quince':15,'dieciséis':16,'diecisiete':17,'dieciocho':18,'diecinueve':19,'veinte':20 };
-  for (var p in palabras) {
-    if (texto.includes(p)) return palabras[p];
-  }
-  var match = texto.match(/\d+/);
-  if (match) return parseInt(match[0]);
-  return null;
-}
-
-function irSiguientePaso() {
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  if (p.tipo === 'texto_libre' && !estado.respuestas[p.id]) {
-    estado.respuestas[p.id] = '';
-  }
-  var sig = siguientePasoVisible(estado.pasoActual);
+function irSig() {
+  var p = pregs()[S.pasoActual];
+  if (p.tipo === 'libre' && !S.respuestas[p.id]) S.respuestas[p.id] = '';
+  var sig = sigVisible(S.pasoActual);
   if (sig === -1) { mostrarResumen(); return; }
   mostrarPaso(sig);
-  hablar(preguntas[sig].texto);
+  hablar(pregs()[sig].txt);
 }
 
-function irPasoAnterior() {
-  var ant = anteriorPasoVisible(estado.pasoActual);
-  if (ant >= 0) {
-    mostrarPaso(ant);
-    var preguntas = obtenerPreguntas();
-    hablar(preguntas[ant].texto);
+function irAnt() {
+  var ant = antVisible(S.pasoActual);
+  if (ant >= 0) { mostrarPaso(ant); hablar(pregs()[ant].txt); }
+}
+
+// ════════════════════════════════════
+//  PROCESAR VOZ
+// ════════════════════════════════════
+function procesarVoz(txt) {
+  var p = pregs()[S.pasoActual];
+  var tl = txt.toLowerCase();
+  var ok = false;
+
+  if (p.tipo === 'num') {
+    var n = extraerNum(tl);
+    if (n !== null) {
+      S.respuestas[p.id] = n;
+      var el = document.getElementById('cnt-val');
+      if (el) el.textContent = n;
+      var ra = document.getElementById('resp-area');
+      var lv = document.getElementById('voz-live');
+      if (ra) ra.className = 'resp-area ok';
+      if (lv) lv.textContent = n + ' cuadros';
+      ok = true;
+    }
+  } else if (p.tipo === 'opc') {
+    var enc = null;
+    p.ops.forEach(function(op) {
+      if (tl.includes(op.toLowerCase().split(' ')[0])) enc = op;
+    });
+    if (enc) { S.respuestas[p.id] = enc; ok = true; }
+  } else if (p.tipo === 'texto' || p.tipo === 'libre') {
+    S.respuestas[p.id] = (tl === 'nada' || tl === 'nada más') ? '' : txt;
+    ok = true;
+  } else if (p.tipo === 'multi') {
+    var opE = null;
+    p.ops.forEach(function(op) { if (tl.includes(op.toLowerCase())) opE = op; });
+    if (opE) { toggleMulti(opE); ok = true; }
+  }
+
+  if (ok) {
+    // Breve pausa visual antes de avanzar
+    setTimeout(irSig, 700);
   }
 }
 
-// ══════════════════════════════════════════
+function extraerNum(txt) {
+  var mapa = {'cero':0,'un':1,'uno':1,'una':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,'seis':6,'siete':7,'ocho':8,'nueve':9,'diez':10,'once':11,'doce':12,'trece':13,'catorce':14,'quince':15,'dieciséis':16,'diecisiete':17,'dieciocho':18,'diecinueve':19,'veinte':20,'veintiuno':21,'veintidós':22,'veintitrés':23};
+  for (var k in mapa) { if (txt.includes(k)) return mapa[k]; }
+  var m = txt.match(/\d+/);
+  return m ? parseInt(m[0]) : null;
+}
+
+// ════════════════════════════════════
 //  PAUSA / CONTINÚA
-// ══════════════════════════════════════════
+// ════════════════════════════════════
 function pausar() {
-  if (reconocedor) try { reconocedor.stop(); } catch(e) {}
-  estado.pausado = true;
-  estado.escuchando = false;
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  var ctx = '📍 ' + estado.apiario;
-  if (estado.respuestas.colmena) ctx += ' · Colmena ' + estado.respuestas.colmena;
-  ctx += '\n⏸ Esperando en: ' + p.texto;
-  document.getElementById('pausa-contexto').textContent = ctx;
-  document.getElementById('p-pausa').classList.add('activa');
-  hablar('Sesión pausada. Di continúa para seguir.');
+  detenerEscucha();
+  S.pausado = true;
+  var p = pregs()[S.pasoActual];
+  var ctx = '📍 ' + S.apiario;
+  if (S.respuestas.colmena) ctx += ' · Colmena ' + S.respuestas.colmena;
+  ctx += '\n⏸ En: ' + p.txt;
+  document.getElementById('pausa-ctx').textContent = ctx;
+  document.getElementById('overlay-pausa').classList.add('activo');
+  window.speechSynthesis.cancel();
 }
 
 function reanudar() {
-  estado.pausado = false;
-  document.getElementById('p-pausa').classList.remove('activa');
-  var preguntas = obtenerPreguntas();
-  var p = preguntas[estado.pasoActual];
-  hablar(p.texto, function() { escuchar(); });
+  S.pausado = false;
+  document.getElementById('overlay-pausa').classList.remove('activo');
+  actualizarEstadoMic();
+  var p = pregs()[S.pasoActual];
+  hablar(p.txt);
 }
 
-// ══════════════════════════════════════════
-//  RESUMEN
-// ══════════════════════════════════════════
-var LABELS = {
-  colmena: 'Colmena', animo: 'Ánimo', reina: 'Reina',
-  cuadros_cria: 'Cuadros cría', cuadros_alimento: 'Cuadros alimento',
-  necesidades: 'Necesidades', enfermedad: 'Enfermedad/plaga', notas: 'Notas',
-  cuadros_totales: 'Cuadros totales', patron_puesta: 'Patrón puesta',
-  cera_nueva: 'Cera nueva', sin_trabajar: 'Sin trabajar',
-  vigor: 'Vigor', zanganos: 'Exceso zánganos',
-  tiene_alza: 'Tiene alza', cuadros_alza: 'Cuadros alza',
-  miel_sin_opercular: 'Miel sin opercular', miel_operculada: 'Miel operculada',
-  cera_alza: 'Cera en alza', peso_alza: 'Peso alza (kg)',
-  division: 'División/núcleo', colmena_origen: 'Colmena origen'
-};
-
+// ════════════════════════════════════
+//  RESUMEN Y GUARDAR
+// ════════════════════════════════════
 function mostrarResumen() {
-  var r = estado.respuestas;
-  document.getElementById('res-colmena-label').textContent = 'Colmena ' + (r.colmena || '—') + ' · ' + estado.apiario;
+  detenerEscucha();
+  var r = S.respuestas;
+  document.getElementById('lbl-res-colmena').textContent = 'Colmena ' + (r.colmena||'—') + ' · ' + S.apiario;
 
-  var textoVoz = 'Colmena ' + r.colmena + '. ';
-  textoVoz += 'Abejas ' + (r.animo || '') + '. ';
-  textoVoz += 'Reina ' + (r.reina || '') + '. ';
-  textoVoz += (r.cuadros_cria || 0) + ' cuadros de cría. ';
-  textoVoz += (r.cuadros_alimento || 0) + ' de alimento. ';
-  if (r.necesidades && r.necesidades !== 'Nada') textoVoz += 'Necesita ' + r.necesidades + '. ';
-  textoVoz += '¿Guardamos?';
+  var voz = 'Colmena ' + r.colmena + '. ';
+  voz += 'Abejas ' + (r.animo||'') + '. Reina ' + (r.reina||'') + '. ';
+  voz += (r.cria||0) + ' cuadros de cría. ' + (r.alimento||0) + ' de alimento. ';
+  if (r.necesidades && r.necesidades !== 'Nada') voz += 'Necesita ' + r.necesidades + '. ';
+  voz += '¿Guardamos?';
 
-  var html = '<div class="resumen-titulo">🐝 Resumen de la revisión</div>';
-  var preguntas = obtenerPreguntas();
-  preguntas.forEach(function(p) {
-    if (!pasoEsVisible(preguntas.indexOf(p))) return;
-    var val = r[p.id];
-    if (val === undefined || val === '') return;
-    html += '<div class="resumen-fila">';
-    html += '<span class="res-campo">' + (LABELS[p.id] || p.id) + '</span>';
-    html += '<span class="res-valor">' + val + '</span>';
-    html += '</div>';
+  var html = '<div style="font-size:16px;font-weight:700;margin-bottom:12px">🐝 Resumen</div>';
+  pregs().forEach(function(p, i) {
+    if (!visible(i)) return;
+    var v = r[p.id];
+    if (v === undefined || v === '') return;
+    html += '<div class="res-fila"><span class="res-campo">' + (LABELS[p.id]||p.id) + '</span><span class="res-val">' + v + '</span></div>';
   });
+  html += '<div style="margin:14px 0 8px;padding:10px;background:var(--verde-palido);border-radius:10px;font-size:12px;color:var(--verde)">🔊 La app leerá este resumen en voz alta</div>';
+  html += '<button class="btn-guardar" onclick="guardar()">✓ Guardar y continuar</button>';
+  html += '<button class="btn-corregir" onclick="volverRevision()">← Corregir algo</button>';
 
-  html += '<div style="margin:16px 0 8px;padding:10px;background:var(--verde-pálido);border-radius:10px;font-size:12px;color:var(--verde)">🔊 La app leerá este resumen en voz alta</div>';
-  html += '<button class="btn-guardar" onclick="guardarRevision()">✓ Guardar y continuar</button>';
-  html += '<button class="btn-corregir" onclick="irA(\'p-revision\')">← Corregir algo</button>';
-
-  document.getElementById('resumen-contenido').innerHTML = html;
+  document.getElementById('res-contenido').innerHTML = html;
   irA('p-resumen');
-  hablar(textoVoz);
+  hablar(voz);
 }
 
-// ══════════════════════════════════════════
-//  GUARDAR
-// ══════════════════════════════════════════
-function guardarRevision() {
+function volverRevision() {
+  irA('p-revision');
+  mostrarPaso(S.pasoActual);
+  hablar(pregs()[S.pasoActual].txt);
+}
+
+function guardar() {
   var sesiones = JSON.parse(localStorage.getItem('apivoz_sesiones') || '[]');
   var hoy = new Date().toLocaleDateString('es-CO');
-
-  var sesionHoy = sesiones.find(function(s) {
-    return s.apiario === estado.apiario && s.fecha === hoy && s.modo === estado.modo;
-  });
-
-  var revision = Object.assign({}, estado.respuestas, {
-    timestamp: new Date().toISOString(),
-    modo: estado.modo
-  });
-
-  if (!sesionHoy) {
-    sesionHoy = { apiario: estado.apiario, fecha: hoy, modo: estado.modo, revisiones: [] };
-    sesiones.unshift(sesionHoy);
-  }
-  sesionHoy.revisiones.push(revision);
+  var rev = Object.assign({}, S.respuestas, {ts: new Date().toISOString(), modo: S.modo});
+  var ses = sesiones.find(function(s){ return s.apiario===S.apiario && s.fecha===hoy && s.modo===S.modo; });
+  if (!ses) { ses = {apiario:S.apiario, fecha:hoy, modo:S.modo, revisiones:[]}; sesiones.unshift(ses); }
+  ses.revisiones.push(rev);
   localStorage.setItem('apivoz_sesiones', JSON.stringify(sesiones));
 
-  // Limpiar para siguiente colmena
-  estado.respuestas = {};
-  estado.pasoActual = 0;
-
-  hablar('Colmena ' + revision.colmena + ' guardada. ¿Siguiente colmena?', function() {
+  S.respuestas = {}; S.pasoActual = 0;
+  hablar('Colmena ' + rev.colmena + ' guardada. ¿Qué colmena sigue?', function() {
     irA('p-revision');
     mostrarPaso(0);
+    iniciarEscucha();
   });
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════
 //  HISTORIAL
-// ══════════════════════════════════════════
-function cargarHistorial() {
+// ════════════════════════════════════
+function renderHistorial() {
   var sesiones = JSON.parse(localStorage.getItem('apivoz_sesiones') || '[]');
-  var cont = document.getElementById('historial-contenido');
-
-  if (!sesiones.length) {
-    cont.innerHTML = '<div class="vacio">🐝 Aún no hay revisiones guardadas</div>';
-    return;
-  }
-
+  var c = document.getElementById('hist-contenido');
+  if (!sesiones.length) { c.innerHTML = '<div class="vacio">🐝 Aún no hay revisiones</div>'; return; }
   var html = '';
   sesiones.forEach(function(ses) {
-    html += '<div class="hist-sesion">';
-    html += '<div class="hist-ses-top"><span class="hist-ses-apiario">📍 ' + ses.apiario + '</span><span class="hist-ses-fecha">' + ses.fecha + '</span></div>';
-    html += '<div class="hist-ses-info">' + ses.revisiones.length + ' colmenas · ' + (ses.modo === 'expres' ? '⚡ Exprés' : '🔍 Completo') + '</div>';
-    html += '</div>';
+    html += '<div class="hist-ses"><div class="hist-ses-top"><span style="font-size:14px;font-weight:600">📍 '+ses.apiario+'</span><span style="font-size:12px;color:var(--texto-suave)">'+ses.fecha+'</span></div>';
+    html += '<div style="font-size:12px;color:var(--texto-suave);margin-bottom:8px">'+ses.revisiones.length+' colmenas · '+(ses.modo==='expres'?'⚡':'🔍')+'</div>';
     ses.revisiones.forEach(function(rev) {
-      html += '<div class="hist-colmena">';
-      html += '<div class="hist-col-top"><span class="hist-col-num">Colmena ' + rev.colmena + '</span><span class="hist-col-modo">' + (rev.modo === 'expres' ? '⚡' : '🔍') + '</span></div>';
-      var detalle = [];
-      if (rev.animo) detalle.push(rev.animo);
-      if (rev.reina) detalle.push('Reina: ' + rev.reina);
-      if (rev.cuadros_cria) detalle.push(rev.cuadros_cria + ' cría');
-      if (rev.cuadros_alimento) detalle.push(rev.cuadros_alimento + ' alimento');
-      if (rev.tiene_alza === 'Sí' && rev.miel_operculada) detalle.push(rev.miel_operculada + ' op.');
-      html += '<div class="hist-col-detalle">' + detalle.join(' · ') + '</div>';
-      html += '</div>';
+      html += '<div class="hist-col"><div class="hist-col-top"><span style="font-size:14px;font-weight:600">Colmena '+rev.colmena+'</span><span style="font-size:11px;color:var(--texto-suave)">'+(rev.modo==='expres'?'⚡':'🔍')+'</span></div>';
+      var d = [];
+      if (rev.animo) d.push(rev.animo);
+      if (rev.reina) d.push('Reina: '+rev.reina);
+      if (rev.cria) d.push(rev.cria+' cría');
+      if (rev.alimento) d.push(rev.alimento+' alimento');
+      html += '<div style="font-size:12px;color:var(--texto-suave);margin-top:3px">'+d.join(' · ')+'</div></div>';
     });
+    html += '</div>';
   });
-
-  cont.innerHTML = html;
+  c.innerHTML = html;
 }
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════
 //  INIT
-// ══════════════════════════════════════════
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && estado.pausado) reanudar();
-});
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(function() {});
-}
+// ════════════════════════════════════
+cargarApiarios();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
 </html>
