@@ -803,7 +803,7 @@ function renderHistorial() {
 //  INIT
 // ════════════════════════════════════
 cargarApiarios();
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/apivoz/sw.js').then(function(r){ console.log('[SW] OK:', r.scope); }).catch(function(e){ console.error('[SW] Error:', e); }); }); }
 </script>
 </body>
 </html>
