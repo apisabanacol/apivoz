@@ -330,12 +330,12 @@ var PE=[
   },
   {
     id:'_grupo_nec',
-    txt:'Necesidades y novedad',
+    txt:'Requerimientos y novedad',
     tipo:'grupo',
     hint:'Di: "necesita alza, sin enfermedades"',
-    ayuda:'Necesidades: di alza, alimentación, cera o nada. Enfermedad: di no, o sí seguido del nombre.',
+    ayuda:'Requerimiento: di alza, alimentación, cera o nada. Enfermedad: di no, o sí seguido del nombre.',
     campos:[
-      {id:'nec', lbl:'Necesita', ops:[
+      {id:'nec', lbl:'Requerimiento', ops:[
         {v:'Alza',        ico:'📦',hint:''},
         {v:'Alimentación',ico:'🌿',hint:''},
         {v:'Cera',        ico:'🕯️',hint:''},
@@ -426,12 +426,12 @@ var PC=[
   },
   {
     id:'_grupo_nec_c',
-    txt:'Necesidades, enfermedad y ¿división?',
+    txt:'Requerimientos, enfermedad y ¿división?',
     tipo:'grupo',
     hint:'Di: "necesita cera, sin enfermedades, no hubo división"',
-    ayuda:'Necesidades: alza, alimentación, cera o nada. Enfermedad: no, o sí con el nombre. División: no o sí.',
+    ayuda:'Requerimiento: alza, alimentación, cera o nada. Enfermedad: no, o sí con el nombre. División: no o sí.',
     campos:[
-      {id:'nec', lbl:'Necesita', ops:[{v:'Alza',ico:'📦'},{v:'Alimentación',ico:'🌿'},{v:'Cera',ico:'🕯️'},{v:'Nada',ico:'✅'}]},
+      {id:'nec', lbl:'Requerimiento', ops:[{v:'Alza',ico:'📦'},{v:'Alimentación',ico:'🌿'},{v:'Cera',ico:'🕯️'},{v:'Nada',ico:'✅'}]},
       {id:'enf', lbl:'Enfermedad', ops:[{v:'No',ico:'✅'},{v:'Sí - Varroa',ico:'🚨'},{v:'Sí - Loque',ico:'🚨'},{v:'Sí - Otra',ico:'🚨'}]},
       {id:'div', lbl:'División', ops:[{v:'No',ico:'✅'},{v:'Sí',ico:'✂️'}]}
     ]
@@ -440,7 +440,7 @@ var PC=[
   {id:'notas',    txt:'¿Algo más?', tipo:'libre', hint:'Di "nada" para saltar', ayuda:''}
 ];
 
-var LABELS={colmena:'Colmena',reina:'Reina',animo:'Ánimo',cria:'Cría',patron:'Patrón puesta',poblacion:'Población',alza:'Alza',nec:'Necesita',enf:'Enfermedad',notas:'Notas',tot_cria:'Cuadros totales',cera_n:'Cera nueva',sin_t:'Sin trabajar',vigor:'Vigor',zang:'Exc. zánganos',t_alza:'Tiene alza',tot_alza:'Cuadros alza',sin_op:'Sin opercular',operc:'Operculados',cera_a:'Cera alza',peso_a:'Peso alza (kg)',div:'División',col_orig:'Colmena origen'};
+var LABELS={colmena:'Colmena',reina:'Reina',animo:'Ánimo',cria:'Cría',patron:'Patrón puesta',poblacion:'Población',alza:'Alza',nec:'Requerimiento',enf:'Enfermedad',notas:'Notas',tot_cria:'Cuadros totales',cera_n:'Cera nueva',sin_t:'Sin trabajar',vigor:'Vigor',zang:'Exc. zánganos',t_alza:'Tiene alza',tot_alza:'Cuadros alza',sin_op:'Sin opercular',operc:'Operculados',cera_a:'Cera alza',peso_a:'Peso alza (kg)',div:'División',col_orig:'Colmena origen'};
 
 // ═══════════════════════════════════════
 //  APIARIOS
@@ -760,39 +760,37 @@ function irAnt(){
 function procesarVoz(txt){
   if(S.hablando||S.pausado)return;
   var p=pregs()[S.paso];
-  var tl=txt.toLowerCase();
+  var tlN=normalizar(txt);
   var ok=false;
 
   if(p.tipo==='txt'||p.tipo==='libre'){
-    S.resp[p.id]=(tl==='nada'||tl==='nada más')?'':txt;
+    var esNada=tlN==='nada'||tlN==='nada mas'||tlN==='ninguna'||tlN==='todo bien'||tlN==='ok';
+    S.resp[p.id]=esNada?'':txt;
     var lv=document.getElementById('voz-live');var ra=document.getElementById('ra');
     if(lv)lv.textContent=S.resp[p.id]||'(saltado)';
     if(ra)ra.className='ra ok';
     ok=true;
 
   } else if(p.tipo==='opc'||p.tipo==='opc_rango'){
-    var enc=matchOp(tl,p.ops);
+    var enc=buscarEnDic(tlN,p.ops);
     if(enc){S.resp[p.id]=enc.v;ok=true;}
 
   } else if(p.tipo==='grupo'){
-    // Intentar extraer cada campo del grupo
     var alguno=false;
     p.campos.forEach(function(campo){
-      var m=matchOp(tl,campo.ops);
+      var m=buscarEnDic(tlN,campo.ops);
       if(m){S.resp[campo.id]=m.v;alguno=true;}
     });
-    if(alguno){ok=puedeIrSig(p);}
+    if(alguno)ok=true;
 
   } else if(p.tipo==='grupo_num'){
-    // Extraer números por palabra clave
     var found=false;
     p.campos.forEach(function(campo){
-      var claves=campo.lbl.toLowerCase().split(' ');
+      var claves=normalizar(campo.lbl).split(' ');
       claves.forEach(function(clave){
-        if(clave.length>3&&tl.includes(clave)){
-          // buscar número cerca de esa palabra
+        if(clave.length>3&&tlN.includes(clave)){
           var re=new RegExp('(\\d+|cero|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)[^\\d]*'+clave+'|'+clave+'[^\\d]*(\\d+|cero|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)');
-          var m=tl.match(re);
+          var m=tlN.match(re);
           if(m){var n=exNum(m[1]||m[2]);if(n!==null){S.resp[campo.id]=n;found=true;}}
         }
       });
@@ -802,15 +800,44 @@ function procesarVoz(txt){
 
   if(ok){
     S.intentosFallidos=0;
+    var lv2=document.getElementById('voz-live');var ra2=document.getElementById('ra');
+    if(lv2)lv2.textContent=txt;if(ra2)ra2.className='ra ok';
     mostrarPaso(S.paso);
-    if(puedeIrSig(pregs()[S.paso]))setTimeout(irSig,600);
+    if(puedeIrSig(pregs()[S.paso]))setTimeout(irSig,700);
   } else {
-    // No entendió — ayuda auditiva
     S.intentosFallidos++;
-    if(S.intentosFallidos>=1&&p.ayuda){
-      hablar('No entendí. '+p.ayuda);
-    }
+    if(S.intentosFallidos>=1&&p.ayuda){hablar('No entendi. '+p.ayuda);}
   }
+}
+
+// Busca en diccionario de sinonimos, normalizado sin tildes
+function buscarEnDic(tlN,ops){
+  var enc=null;
+  // Ordenar de mas especifico (mas sinonimos) a menos
+  var ord=[].concat(ops).sort(function(a,b){
+    return (SINONIMOS[b.v]||[]).length-(SINONIMOS[a.v]||[]).length;
+  });
+  // 1. Buscar por sinonimos
+  ord.forEach(function(op){
+    if(enc)return;
+    var sins=SINONIMOS[op.v]||[];
+    sins.forEach(function(s){
+      if(enc)return;
+      if(tlN.includes(normalizar(s)))enc=op;
+    });
+  });
+  // 2. Fallback por label o valor
+  if(!enc){
+    ord.forEach(function(op){
+      if(enc)return;
+      var kw=normalizar(op.lbl||op.v);
+      kw.split(' ').forEach(function(w){
+        if(enc)return;
+        if(w.length>3&&tlN.includes(w))enc=op;
+      });
+    });
+  }
+  return enc;
 }
 
 // ═══════════════════════════════════════
@@ -821,7 +848,7 @@ var SINONIMOS = {
   'Alza':        ['alza','alzita','le falta alza','necesita alza','poner alza','hay que poner alza','subir alza','agregar alza','falta alza'],
   'Alimentación':['alimentación','alimentacion','alimento','alimentar','necesita alimento','falta alimento','le falta comida','darle comida','hay que alimentar','jarabe','azúcar','azucar','falta alimentación','falta alimentacion'],
   'Cera':        ['cera','falta cera','necesita cera','le falta cera','poner cera','hay que poner cera','cuadro de cera','marco de cera'],
-  'Nada':        ['nada','ninguna','sin novedad','todo bien','está bien','sin necesidad','no necesita','ok','bien','normal','no falta nada','no necesita nada'],
+  'Nada':        ['nada','ninguna','ninguno','ninguno','requerimiento ninguno','requerimiento ninguna','sin requerimiento','sin requerimientos','sin novedad','todo bien','está bien','sin necesidad','no necesita','ok','bien','normal','no falta nada','no necesita nada','sin nada','no hay nada','no requiere','no requiere nada'],
   // ENFERMEDADES
   'No':          ['no','ninguna','sin enfermedad','sin enfermedades','sin problema','sin problemas','sana','saludable','está sana','todo bien','sin novedad','limpia','no hay','no tiene','negativo'],
   'Sí - Varroa': ['varroa','varoa','con varroa','hay varroa','tiene varroa','presencia de varroa','varroa alta','varroa baja','ácaro','acaro'],
@@ -861,26 +888,7 @@ var SINONIMOS = {
   'Sí':  ['sí','si','hubo','se hizo','se dividió','se dividio','división','division']
 };
 
-function matchOp(tl,ops){
-  var enc=null;
-  // Normalizar texto: quitar tildes para comparación
-  var tlN=normalizar(tl);
-  ops.forEach(function(op){
-    var sinonimos=SINONIMOS[op.v]||[];
-    // 1. Buscar por sinónimos (más preciso)
-    sinonimos.forEach(function(s){
-      if(tlN.includes(normalizar(s)))enc=op;
-    });
-    // 2. Fallback: buscar por label o valor directo
-    if(!enc){
-      var kw=normalizar(op.lbl||op.v);
-      kw.split(' ').forEach(function(w){
-        if(w.length>3&&tlN.includes(w))enc=op;
-      });
-    }
-  });
-  return enc;
-}
+
 
 function normalizar(txt){
   if(!txt)return '';
@@ -939,7 +947,7 @@ function buildSnapTxt(dato){
   if(r.cria)txt+='Cría '+r.cria+'. ';
   if(r.poblacion)txt+='Población '+r.poblacion+'. ';
   if(r.alza)txt+='Alza '+r.alza+'. ';
-  if(r.nec&&r.nec!=='Nada')txt+='Necesitaba '+r.nec+'. ';
+  if(r.nec&&r.nec!=='Nada')txt+='Requerimiento: '+r.nec+'. ';
   return txt;
 }
 
@@ -953,7 +961,7 @@ function buildSnapHTML(dato){
   if(r.poblacion)html+='<div class="snap-item"><div class="snap-val">'+r.poblacion+'</div><div class="snap-lbl">👥 Población</div></div>';
   if(r.alza)html+='<div class="snap-item"><div class="snap-val">'+r.alza.split(' ')[0]+'</div><div class="snap-lbl">🍯 Alza</div></div>';
   if(r.cria)html+='<div class="snap-item"><div class="snap-val">'+r.cria+'</div><div class="snap-lbl">🐛 Cría</div></div>';
-  if(r.nec)html+='<div class="snap-item"><div class="snap-val">'+r.nec+'</div><div class="snap-lbl">⚠️ Necesitaba</div></div>';
+  if(r.nec)html+='<div class="snap-item"><div class="snap-val">'+r.nec+'</div><div class="snap-lbl">⚠️ Requerimiento</div></div>';
   html+='</div>';
   html+='<div class="snap-chips">';
   if(r.reina)html+='<span class="snap-chip '+reinaC+'">👑 '+r.reina+'</span>';
@@ -975,7 +983,7 @@ function mostrarResumen(){
   if(r.animo)voz+=r.animo+'. ';
   if(r.poblacion)voz+='Población '+r.poblacion+'. ';
   if(r.alza)voz+='Alza '+r.alza+'. ';
-  if(r.nec&&r.nec!=='Nada')voz+='Necesita '+r.nec+'. ';
+  if(r.nec&&r.nec!=='Nada')voz+='Requerimiento: '+r.nec+'. ';
   if(r.enf&&r.enf!=='No')voz+='Alerta: '+r.enf+'. ';
   voz+='¿Guardamos?';
   var html='<div style="font-size:16px;font-weight:700;margin-bottom:12px">🐝 Resumen</div>';
@@ -1062,9 +1070,9 @@ function verDet(revStr,fecha){
     if(rev.peso_a!==undefined)html+=dc('⚖️',rev.peso_a+' kg','Peso estimado');
     html+='</div></div>';
   }
-  // Necesidades
-  html+='<div class="detsec"><div class="detsectit">⚠️ Necesidades y alertas</div>';
-  html+='<div class="detfila"><span class="detcampo">Necesita</span><span class="detval">'+(rev.nec||'Nada')+'</span></div>';
+  // Requerimientos
+  html+='<div class="detsec"><div class="detsectit">⚠️ Requerimientos y alertas</div>';
+  html+='<div class="detfila"><span class="detcampo">Requerimiento</span><span class="detval">'+(rev.nec||'Nada')+'</span></div>';
   html+='<div class="detfila"><span class="detcampo">Enfermedad</span><span class="detval">'+(rev.enf==='No'?'✅ No':'🚨 '+(rev.enf||'—'))+'</span></div>';
   if(rev.zang)html+='<div class="detfila"><span class="detcampo">Exceso zánganos</span><span class="detval">'+(rev.zang==='Sí'?'⚠️ Sí':'✅ No')+'</span></div>';
   if(rev.div==='Sí')html+='<div class="detfila"><span class="detcampo">División</span><span class="detval">✂️ Desde colmena '+(rev.col_orig||'—')+'</span></div>';
