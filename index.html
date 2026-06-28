@@ -813,17 +813,82 @@ function procesarVoz(txt){
   }
 }
 
+// ═══════════════════════════════════════
+//  DICCIONARIO DE SINÓNIMOS
+// ═══════════════════════════════════════
+var SINONIMOS = {
+  // NECESIDADES
+  'Alza':        ['alza','alzita','le falta alza','necesita alza','poner alza','hay que poner alza','subir alza','agregar alza','falta alza'],
+  'Alimentación':['alimentación','alimentacion','alimento','alimentar','necesita alimento','falta alimento','le falta comida','darle comida','hay que alimentar','jarabe','azúcar','azucar','falta alimentación','falta alimentacion'],
+  'Cera':        ['cera','falta cera','necesita cera','le falta cera','poner cera','hay que poner cera','cuadro de cera','marco de cera'],
+  'Nada':        ['nada','ninguna','sin novedad','todo bien','está bien','sin necesidad','no necesita','ok','bien','normal','no falta nada','no necesita nada'],
+  // ENFERMEDADES
+  'No':          ['no','ninguna','sin enfermedad','sin enfermedades','sin problema','sin problemas','sana','saludable','está sana','todo bien','sin novedad','limpia','no hay','no tiene','negativo'],
+  'Sí - Varroa': ['varroa','varoa','con varroa','hay varroa','tiene varroa','presencia de varroa','varroa alta','varroa baja','ácaro','acaro'],
+  'Sí - Loque':  ['loque','loquez','con loque','hay loque','tiene loque','loque americana','loque europea','loca'],
+  'Sí - Otra':   ['otra','otro','enfermedad','enferma','enfermas','hay enfermedad','tiene enfermedad','problema','nosema','sacbrood','cría de cal','criadero enfermo'],
+  // REINA
+  'Óptima':           ['óptima','optima','buena','bien','reina vista','vista','poniendo','pone bien','postura buena','excelente','perfecta','trabajando','activa'],
+  'Poca postura':     ['poca postura','poca','escasa','baja postura','postura baja','postura escasa','postura poca','poco','pone poco','pone poca','postura deficiente','defectuosa'],
+  'En cambio':        ['en cambio','cambio','cambiando','reina en cambio','proceso de cambio','supersedura','reemplazando'],
+  'No encontrada':    ['no encontrada','no la vi','no está','no apareció','no la veo','no se ve','ausente','perdida','muerta','no encontré','no encontre'],
+  // ÁNIMO
+  'Calmadas':   ['calmadas','calma','tranquilas','tranquila','calmada','pacíficas','pacificas','bien','dóciles','dociles','manso','mansas'],
+  'Agresivas':  ['agresivas','agresiva','bravas','brava','pican','picaron','alteradas','alterada','furiosas','furiosa','molestas','molesta','nerviosas'],
+  // CRÍA
+  'Buena':      ['buena','bien','cría buena','buena cría','cría bien','normal','regular','cría normal'],
+  'Escasa':     ['escasa','poca','poca cría','cría escasa','escasita','reducida'],
+  'Muy poca':   ['muy poca','casi nada','muy escasa','mínima','minima','cría muy poca','casi sin cría'],
+  // POBLACIÓN
+  'Poca (1-3)':       ['poca','uno','dos','tres','1','2','3','débil','debil','poca población','muy poca','escasa población'],
+  'Media (4-6)':      ['media','cuatro','cinco','seis','4','5','6','regular','normal','mediana'],
+  'Fuerte (7-9)':     ['fuerte','siete','ocho','nueve','7','8','9','buena población','fuerte población','poblada'],
+  'Muy fuerte (10+)': ['muy fuerte','diez','once','doce','10','11','12','10+','muy poblada','excelente población','llena de abejas','rebosante'],
+  // ALZA
+  'Sin alza':        ['sin alza','no tiene alza','no hay alza','sin','vacía','vacia','no tiene'],
+  'Iniciando (1-3)': ['iniciando','inicio','empezando','comenzando','apenas','poco','poca miel','1 a 3','uno dos tres'],
+  'Avanzando (4-6)': ['avanzando','avanza','mitad','a medias','regular','4 a 6','cuatro cinco seis'],
+  'Casi lista (7-9)': ['casi lista','casi llena','casi','7 a 9','siete ocho nueve','por cosechar','pronto'],
+  'Lista (10+)':      ['lista','llena','cosechar','para cosechar','hay que cosechar','lista para cosechar','se puede cosechar','10+','madura'],
+  // VIGOR
+  'Fuerte':  ['fuerte','muy fuerte','excelente','muy buena','excelente población'],
+  'Media':   ['media','regular','normal','así así'],
+  'Débil':   ['débil','debil','floja','poca','baja'],
+  // ZÁNGANOS
+  'Sí':  ['sí','si','hay','muchos','exceso','demasiados','bastantes'],
+  // DIVISIÓN
+  'No':  ['no','ninguna','no hubo','sin división','sin division'],
+  'Sí':  ['sí','si','hubo','se hizo','se dividió','se dividio','división','division']
+};
+
 function matchOp(tl,ops){
-  // Buscar coincidencia por palabra clave
   var enc=null;
+  // Normalizar texto: quitar tildes para comparación
+  var tlN=normalizar(tl);
   ops.forEach(function(op){
-    var keywords=op.lbl?op.lbl.toLowerCase():op.v.toLowerCase();
-    var kws=keywords.split(' ');
-    kws.forEach(function(kw){
-      if(kw.length>2&&tl.includes(kw))enc=op;
+    var sinonimos=SINONIMOS[op.v]||[];
+    // 1. Buscar por sinónimos (más preciso)
+    sinonimos.forEach(function(s){
+      if(tlN.includes(normalizar(s)))enc=op;
     });
+    // 2. Fallback: buscar por label o valor directo
+    if(!enc){
+      var kw=normalizar(op.lbl||op.v);
+      kw.split(' ').forEach(function(w){
+        if(w.length>3&&tlN.includes(w))enc=op;
+      });
+    }
   });
   return enc;
+}
+
+function normalizar(txt){
+  if(!txt)return '';
+  return txt.toLowerCase()
+    .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i')
+    .replace(/ó/g,'o').replace(/ú/g,'u').replace(/ü/g,'u')
+    .replace(/ñ/g,'n').replace(/[^a-z0-9 ]/g,' ')
+    .replace(/\s+/g,' ').trim();
 }
 
 function exNum(t){
